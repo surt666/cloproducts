@@ -29,21 +29,47 @@
         [:tr[:td (radio-button sg false (:id n))][:td (:name n)][:td (:price n) " kr/md"]])])))
 
 (defn index []
-  (layout "TEST" "En header"
+  (layout "MAIN" "En header"
     (form-to [:POST "/mandatory"]
       (present-sortgroup "tva") (present-sortgroup "bba")
       (submit-button "Next"))))
 
 (defn mandatory [tva bba]
-  (let [order (struct order {} {:tva tva :bba bba})])
-  (layout "TEST2" "En header"
-    (html
-      [:h2 (str tva "," bba)])
-      (link-to "/sess" "sess")))
+  {:session {:order (struct order {} {:tva tva :bba bba})}
+   :body (layout "MANDATORY" "En header"
+    (form-to [:POST "/user-info"]
+      (if (not (= tva nil))
+        (present-sortgroup "tvs"))
+      (if (not (= bba nil))
+        (html (present-sortgroup "bbs") (present-sortgroup "bbt")))
+      (submit-button "Next")))})
 
-(defn sess [req]
-  (layout "SESS" "En header"
-    (println "REQ" req)
-    (html
-      [:h2 (str ((req :session) :tva))])))
+(defn user-info [req]
+  (println "PO" (((req :session) :order) :products))
+  (let [prods (((req :session) :order) :products)
+        cust (((req :session) :order) :customer)]
+    (println "P1" prods "|" (get-in req [:params "tvs"]))
+    (let [products (assoc prods :tvs (get-in req [:params "tvs"]) :bbs (get-in req [:params "bbs"]))]
+    (println "P2" products)
+    {:session {:order (struct order cust products)}
+     :body (layout "USER" "En header"
+      (form-to [:POST "/invoice"]
+        (label :firstname "Fornavn") (text-field :firstname "")
+        (label :lastname "Efternavn") (text-field :lastname "")
+        [:br]
+        (label :street "Vej") (text-field :street "")
+        (label :number "Nr.") (text-field :number "")
+        [:br]
+        (label :floor "Etage") (text-field :floor "")
+        (label :side "Side") (text-field :side "")
+        [:br]
+        (label :zip "Post Nr.") (text-field :zip "")
+        (label :city "by") (text-field :city "")
+        [:br]
+        (submit-button "Next")))})))
+
+(defn invoice [req]
+  (println "POI" (((req :session) :order) :products))
+  (layout "INVOICE" "En header"
+    (html [:h2 (str (req :session) :order)])))
 
