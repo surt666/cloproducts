@@ -1,6 +1,6 @@
 # cloproducts
 
-FIXME: write description
+Experiment with clojure to make a product catalogue and shopping basket based on couchdb data
 
 ## Usage
 
