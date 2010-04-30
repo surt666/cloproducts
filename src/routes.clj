@@ -1,12 +1,12 @@
-(ns helloworld1
+(ns routes
   (:use compojure.core       
         ring.adapter.jetty
         ring.middleware.reload
         ring.middleware.stacktrace
         ring.middleware.session
         ring.middleware.session.memory
-        clotest.roles
-        clotest.models
+        cloproducts.roles
+        cloproducts.models
         hiccup.page-helpers
         hiccup.core
         hiccup.form-helpers)
@@ -41,12 +41,12 @@
       (present-sortgroup "tva") (present-sortgroup "bba")
       (submit-button "Next"))))
 
-(defn mandatory [bba tva]
-  {:session {:tva tva}
-   :body (layout "TEST2" "En header"
+(defn mandatory [tva bba]
+  (let [order (struct order {} {:tva tva :bba bba})])
+  (layout "TEST2" "En header"
     (html
-      [:h2 (str bba "," tva)])
-      (link-to "/sess" "sess"))})
+      [:h2 (str tva "," bba)])
+      (link-to "/sess" "sess")))
 
 (defn sess [req]
   (layout "SESS" "En header"
@@ -58,15 +58,15 @@
   (GET "/" req (index))
 ;  (POST "/mandatory" req
 ;    (mandatory (get-in req [:params "bba"]) (get-in req [:params "tva"])))
-  (POST "/mandatory" [bba tva]
-    (mandatory bba tva))
+  (POST "/mandatory" [tva bba]
+    (mandatory tva bba))
   (GET "/sess" req (sess req))
   (route/not-found "Page not found"))
 
 (def app1
      (-> (var test-routes)
-         (wrap-reload '(helloworld1))
-         (wrap-reload '(clotest.roles))
+         (wrap-reload '(routes))
+         (wrap-reload '(cloproducts.roles))
          (wrap-session (memory-store))
          (wrap-stacktrace)))
 

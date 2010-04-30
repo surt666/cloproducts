@@ -1,4 +1,4 @@
-(ns clotest.models)
+(ns cloproducts.models)
 
 (defstruct contact :contact-id :name)
 

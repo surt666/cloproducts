@@ -1,4 +1,4 @@
-(ns clotest.roles
+(ns cloproducts.roles
   (:use couchdb.client))
 
 (defn buy [customer product]
