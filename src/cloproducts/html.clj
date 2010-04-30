@@ -53,20 +53,21 @@
     (println "P2" products)
     {:session {:order (struct order cust products)}
      :body (layout "USER" "En header"
-      (form-to [:POST "/invoice"]
-        (label :firstname "Fornavn") (text-field :firstname "")
-        (label :lastname "Efternavn") (text-field :lastname "")
-        [:br]
-        (label :street "Vej") (text-field :street "")
-        (label :number "Nr.") (text-field :number "")
-        [:br]
-        (label :floor "Etage") (text-field :floor "")
-        (label :side "Side") (text-field :side "")
-        [:br]
-        (label :zip "Post Nr.") (text-field :zip "")
-        (label :city "by") (text-field :city "")
-        [:br]
-        (submit-button "Next")))})))
+       (form-to [:POST "/invoice"]
+       [:table
+         [:tr
+           [:td (label :firstname "Fornavn") (text-field :firstname "")]
+           [:td (label :lastname "Efternavn") (text-field :lastname "")]]
+         [:tr
+           [:td (label :street "Vej") (text-field :street "")]
+           [:td (label :number "Nr.") (text-field :number "")]]
+         [:tr
+           [:td (label :floor "Etage") (text-field :floor "")]
+           [:td (label :side "Side") (text-field :side "")]]
+         [:tr
+           [:td (label :zip "Post Nr.") (text-field :zip "")]
+           [:td (label :city "by") (text-field :city "")]]]
+         (submit-button "Next")))})))
 
 (defn invoice [req]
   (println "POI" (((req :session) :order) :products))
