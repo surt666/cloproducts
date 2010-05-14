@@ -35,7 +35,8 @@
 (defn opret-abonnement [abon-id juridisk betaler forbruger produktId]
   (let [p (find-produkt produktId)]
     (let [l (find-alle-leverings-aftaler p abon-id betaler forbruger)]
-      (struct abonnement abon-id juridisk [(now) (now)] l (:pris p) 0.0))))
+      (let [a (struct abonnement abon-id juridisk [(now) (now)] l (:pris p) 0.0)]
+        (println "Persister" (:id a))
+        a))))
 
-(opret-abonnement 1 111 222 333 1701001)
-
+(opret-abonnement 3 111 222 333 1701001)
