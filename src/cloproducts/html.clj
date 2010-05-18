@@ -1,6 +1,7 @@
 (ns cloproducts.html
   (:use cloproducts.roles
         cloproducts.models
+        repositories.couch-repository
         hiccup.page-helpers
         hiccup.core
         hiccup.form-helpers))

@@ -1,5 +1,6 @@
 (ns cloproducts.setup-products
-  :use cloproducts.roles)
+  (:use repositories.couch-repository
+       cloproducts.models))
 
 (defn create-products []
   (create-product (struct product 1101001 "Grundpakke" "tv" 1 "tva" 1 149.00 nil))
