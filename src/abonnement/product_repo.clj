@@ -5,6 +5,7 @@
 (def produkter {1101001 (struct produkt 1101001 "Grundpakke" 149.00 nil)
                 1101101 (struct produkt 1101101 "Mellempakke" 199.00 nil)
                 1101201 (struct produkt 1101201 "Fuldpakke" 299.00 nil)
+                1301201 (struct produkt 1301201 "Sikkerheds pakke" 29.00 nil)
                 1301101 (with-meta (struct produkt 1301101 "8 Mbit/s Bredbaand" 129.00 nil) {:prov_system "Stalone" :prov_string "1301101PROV"})
                 1301002 (with-meta (struct produkt 1301002 "15 Mbit/s Bredbaand" 189.00 nil) {:prov_system "Stalone" :prov_string "1301002PROV"})
                 1301003 (with-meta (struct produkt 1301003 "50 Mbit/s Bredbaand" 339.00 nil) {:prov_system "Stalone" :prov_string "1301003PROV"})

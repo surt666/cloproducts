@@ -1,9 +1,9 @@
 (ns abonnement.model)
 
-(defstruct abonnement :id :juridisk :leverings-aftaler :betalings-aftaler)
+(defstruct aftale :id :juridisk :leverings-aftaler :betalings-aftaler :status)
 
-(defstruct leverings-aftale :abonnement-id :produkt-id :leveringsPeriode :forbruger)
+(defstruct leverings-aftale :id :abonnement-id :produkt-id :leveringsPeriode :forbruger :installations-id :status :opgrader-leverings-aftale-id)
 
-(defstruct betalings-aftale :abonnement-id :pris :rabat :faktureringsPeriode :betaler)
+(defstruct betalings-aftale :id :abonnement-id :produkt-id :pris :rabat :faktureringsPeriode :betaler :status)
 
 
