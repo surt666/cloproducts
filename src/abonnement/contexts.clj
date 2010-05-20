@@ -14,20 +14,17 @@
       (flatten (conj result p))
      (recur (conj result p) (filter-bp (:bundle-produkter (find-produkt (first bp))))))))
 
-(defn opret-leverings-aftale [abon-id forbruger produkt-id prov-system prov-string logistic-string leverings-periode inst-id]
-  (if (not (nil? prov-system))
-    (provisioner prov-system prov-string (now)))
-  (if (not (nil? logistic-string))
-    (bestil-fra-lager logistic-string))
-  (struct leverings-aftale nil abon-id produkt-id leverings-periode forbruger inst-id :aktiv nil))
-
-(defn bla [produkt-id abon-id forbruger inst-id]
+(defn opret-leverings-aftale [produkt-id abon-id forbruger inst-id]
   (let [prod (find-produkt produkt-id)]
     (let [prov-system (:prov_system (meta prod))
           prov-string (:prov_string (meta prod))
           logistic-string (:logistic_string (meta prod))
           leverings-periode [(now) (now)]]
-      (opret-leverings-aftale abon-id forbruger produkt-id prov-system prov-string logistic-string leverings-periode inst-id))))
+      (if (not (nil? prov-system))
+          (provisioner prov-system prov-string (now)))
+        (if (not (nil? logistic-string))
+          (bestil-fra-lager logistic-string))
+        (struct leverings-aftale nil abon-id produkt-id leverings-periode forbruger inst-id :aktiv nil))))
 
 (defn opret-alle-leverings-aftaler [produkt-ids abon-id forbruger inst-id]
   (for [produkt-id produkt-ids]
@@ -35,8 +32,8 @@
       (let [bundle-ids (find-alle-bundle-produkter (filter-bp (:bundle-produkter produkt)))]
         (if (not (empty? bundle-ids))
           (for [pid bundle-ids]
-            (bla pid abon-id forbruger inst-id))
-         (bla produkt-id abon-id forbruger inst-id))))))
+            (opret-leverings-aftale pid abon-id forbruger inst-id))
+         (opret-leverings-aftale produkt-id abon-id forbruger inst-id))))))
 
 (defn opret-betalings-aftale [produkt-id abon-id betaler fakturerings-periode]
   (let [prod (find-produkt produkt-id)]
