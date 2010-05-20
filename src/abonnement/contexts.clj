@@ -21,10 +21,10 @@
           logistic-string (:logistic_string (meta prod))
           leverings-periode [(now) (now)]]
       (if (not (nil? prov-system))
-          (provisioner prov-system prov-string (now)))
-        (if (not (nil? logistic-string))
-          (bestil-fra-lager logistic-string))
-        (struct leverings-aftale nil abon-id produkt-id leverings-periode forbruger inst-id :aktiv nil))))
+        (provisioner prov-system prov-string (now)))
+      (if (not (nil? logistic-string))
+        (bestil-fra-lager logistic-string))
+      (struct leverings-aftale nil abon-id produkt-id leverings-periode forbruger inst-id :aktiv nil))))
 
 (defn opret-alle-leverings-aftaler [produkt-ids abon-id forbruger inst-id]
   (for [produkt-id produkt-ids]
