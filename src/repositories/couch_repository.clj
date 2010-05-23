@@ -44,3 +44,12 @@
 
 (defn create-contract [contract]
   (:_id (document-create host db (:name contract) contract)))
+
+(defn find-contract [contract]
+  (document-get host db contract))
+
+(defn find-sales-concept [sales-concept]
+  (document-get host db sales-concept))
+
+(defn find-pricebook [pricebook]
+  (document-get host db pricebook))

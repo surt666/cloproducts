@@ -14,6 +14,8 @@
   (GET "/" req (index))
 ;  (POST "/mandatory" req
 ;    (mandatory (get-in req [:params "bba"]) (get-in req [:params "tva"])))
+  (POST "/main" [contractname]
+    (main contractname))
   (POST "/mandatory" [tva bba]
     (mandatory tva bba))
   (POST "/user-info" req
@@ -23,8 +25,8 @@
   (GET "/set-session"  [] {:body "set session" :session {:a-key "a value"}})
   (GET "/read-session" {s :session} {:body (str "session: " s)})
   (GET "/dump-request" r 
-(ring.handler.dump/handle-dump r))
-  (route/not-found "Page not found"))
+  (ring.handler.dump/handle-dump r))
+    (route/not-found "Page not found"))
 
 (def app
      (-> (var app-routes)

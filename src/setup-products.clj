@@ -39,3 +39,10 @@
     (let [pricebook (struct pricebook "KAB" prices)]
       (create-pricebook pricebook))))
 
+(defn create-sales-concepts []
+  (create-sales-concept (struct sales-concept "IER" [1101001 1101032 1101003 1301001 1301002 1301003 1301004 1121001 1321001 1321002 1321003 1321004]))
+  (create-sales-concept (struct sales-concept "FF" [1101001 1101032 1101003 1301001 1301002 1301003 1121001 1321002 1321004])))
+
+(defn create-contracts []
+  (create-contract (struct contract "1234567" "IER" "YouSee"))
+  (create-contract (struct contract "7654321" "FF" "KAB")))
