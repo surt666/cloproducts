@@ -6,7 +6,7 @@
         ring.middleware.session
         ring.middleware.session.memory
         ring.handler.dump
-        cloproducts.html)
+        produkter.html)
   (:require [compojure.route :as route]))
 
 
@@ -28,8 +28,8 @@
 
 (def app
      (-> (var app-routes)
-         (wrap-reload '(cloproducts.html))
-         (wrap-reload '(cloproducts.roles))
+         (wrap-reload '(produkter.html))
+         (wrap-reload '(produkter.roles))
          (wrap-session (memory-store))
          (wrap-stacktrace)))
 

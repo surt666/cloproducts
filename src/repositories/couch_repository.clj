@@ -1,5 +1,6 @@
 (ns repositories.couch-repository
-  (:use couchdb.client))
+  (:use couchdb.client
+        abonnement.model))
 
 (def host "http://localhost:5984/")
 
@@ -15,10 +16,21 @@
   (:_id (document-create host db order)))
 
 (defn create-product [product]
-  (:_id (document-create host db product)))
+  (:_id (document-create host db (assoc product :meta (meta product)))))
+
+(defn create-subscription [aftale]
+  (:_id (document-create host db aftale)))
+
+(defn add-meta [p]
+  (let [meta (:meta p)]
+  (if (not (nil? meta))
+    (dissoc (with-meta p meta) :meta)
+    p)))
 
 (defn find-product [id]
   (document-get host db id))
 
 (defn get-sortgroup [sg]
-  (:rows (view-get host db "views" "get_sortgroup" {:startkey [sg] :endkey [sg {}]})))
+  (map add-meta 
+    (map #(:value %)
+      (:rows (view-get host db "views" "get_sortgroup" {:startkey [sg] :endkey [sg {}]})))))

@@ -1,6 +1,6 @@
-(ns cloproducts.html
-  (:use cloproducts.roles
-        cloproducts.models
+(ns produkter.html
+  (:use produkter.roles
+        produkter.models
         repositories.couch-repository
         hiccup.page-helpers
         hiccup.core
@@ -23,11 +23,11 @@
         ]]]))
 
 (defn present-sortgroup [sg]
-  (let [x (map #(:value %) (get-sortgroup sg))]
+  (let [x (get-sortgroup sg)]
     (html
       [:table
       (for [n x]
-        [:tr[:td (radio-button sg false (:id n))][:td (:name n)][:td (:price n) " kr/md"]])])))
+        [:tr[:td (radio-button sg false (:id n))][:td (:name n)][:td (:price n) " kr/md"][:td (:prov_system (meta n))]])])))
 
 (defn index []
   (layout "MAIN" "En header"

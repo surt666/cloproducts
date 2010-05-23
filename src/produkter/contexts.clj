@@ -1,7 +1,7 @@
-(ns cloproducts.contexts
-   (:use cloproducts.models cloproducts.roles))
+(ns produkter.contexts
+   (:use produkter.models produkter.roles))
 
-(alias 'prod 'cloproducts.models)
+(alias 'prod 'produkter.models)
 
 (defmulti place-order (fn [buyer product & customers] (:type product)))
 

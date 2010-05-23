@@ -1,4 +1,4 @@
-(ns cloproducts.roles)
+(ns produkter.roles)
 
 (defn buy [customer product]
   (println "Buyer" (:name customer) "just bought" (:name product)))
