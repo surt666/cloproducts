@@ -18,24 +18,30 @@
   (create-product (struct product 1321003 "Standard Tekniker" "bb" 1 "bbt" 3 nil :buy))
   (create-product (struct product 1321004 "Traadloes Tekniker" "bb" 2 "bbt" 4 nil :buy)))
 
+(defn calculate-vat [general-price]
+  (* 0.25 general-price))
+
+(defn calculate-total-price [price]
+  (- (+ (:general-price price) (:vat price) (:koda price) (:radio price) (:copydan price) (:digi price)) (:discount price)))
+
 (defn create-pricebooks []
-  (let [prices [(struct price 1101001 89.00 2.00 1.00 7.00 0 0 99.00)
-                (struct price 1101032 119.00 2.00 1.00 7.00 0 0 129.00)
-                (struct price 1101003 179.00 2.00 1.00 7.00 0 0 189.00)
-                (struct price 1301001 99.00 0 0 0 0 0 99.00)
-                (struct price 1301002 129.00 0 0 0 0 0 129.00)
-                (struct price 1301003 169.00 0 0 0 0 0 169.00)
-                (struct price 1301004 199.00 0 0 0 0 0 199.00)
-                (struct price 1121001 100.00 0 0 0 0 0 100.00)
-                (struct price 1321001 0 0 0 0 0 0 0)
-                (struct price 1321002 0 0 0 0 0 0 0)
-                (struct price 1321003 699.00 0 0 0 0 0 699.00)
-                (struct price 1321003 699.00 0 0 0 0  0699.00)]]
+  (let [prices [(struct price 1101001 89.00 (calculate-vat 89.00) 2.00 1.00 7.00 0 0 99.00)
+                (struct price 1101032 119.00 (calculate-vat 119.00) 2.00 1.00 7.00 0 0 129.00)
+                (struct price 1101003 179.00 (calculate-vat 179.00) 2.00 1.00 7.00 0 0 189.00)
+                (struct price 1301001 99.00 (calculate-vat 99.00) 0 0 0 0 0 99.00)
+                (struct price 1301002 129.00 (calculate-vat 129.00)0 0 0 0 0 129.00)
+                (struct price 1301003 169.00 (calculate-vat 169.00) 0 0 0 0 0 169.00)
+                (struct price 1301004 199.00 (calculate-vat 199.00) 0 0 0 0 0 199.00)
+                (struct price 1121001 100.00 (calculate-vat 100.00) 0 0 0 0 0 100.00)
+                (struct price 1321001 0 0 0 0 0 0 0 0)
+                (struct price 1321002 0 0 0 0 0 0 0 0)
+                (struct price 1321003 699.00 (calculate-vat 699.00) 0 0 0 0 0 699.00)
+                (struct price 1321003 699.00 (calculate-vat 699.00) 0 0 0 0 0 699.00)]]
     (let [pricebook (struct pricebook "YouSee" prices)]
       (create-pricebook pricebook)))
-  (let [prices [(struct price 1101001 74.00 2.00 1.00 7.00 0 0 84.00)
-                (struct price 1101032 109.00 2.00 1.00 7.00 0 0 119.00)
-                (struct price 1101003 159.00 2.00 1.00 7.00 0 0 169.00)]]
+  (let [prices [(struct price 1101001 74.00 (calculate-vat 74.00) 2.00 1.00 7.00 0 0 84.00)
+                (struct price 1101032 109.00 (calculate-vat 109.00) 2.00 1.00 7.00 0 0 119.00)
+                (struct price 1101003 159.00 (calculate-vat 159.00) 2.00 1.00 7.00 0 0 169.00)]]
     (let [pricebook (struct pricebook "KAB" prices)]
       (create-pricebook pricebook))))
 

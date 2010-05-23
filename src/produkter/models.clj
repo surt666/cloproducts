@@ -14,7 +14,7 @@
 
 (defstruct pricebook :name :prices)
 
-(defstruct price :product-id :general-price :koda :radio :copydan :digi :discount :total-price)
+(defstruct price :product-id :general-price :vat :koda :radio :copydan :digi :discount :total-price)
 
 (defstruct sales-concept :name :products)
 
