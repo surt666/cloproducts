@@ -53,3 +53,6 @@
 
 (defn find-pricebook [pricebook]
   (document-get host db pricebook))
+
+(defn create-devoting-form [devoting-form]
+  (:_id (document-create host db (:name devoting-form) devoting-form)))

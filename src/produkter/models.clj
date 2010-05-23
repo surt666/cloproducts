@@ -4,7 +4,7 @@
 
 (defstruct prod :product-id :name :type)
 
-(defstruct product :id :name :type :weight :sortgroup :sort :bundle)
+(defstruct product :id :name :type :weight :sortgroup :sort :bundle :devoting-form)
 
 (defstruct customer :id :firstname :lastname :email :address)
 
@@ -19,3 +19,14 @@
 (defstruct sales-concept :name :products)
 
 (defstruct contract :name :sales-concept-name :pricebook)
+
+(defstruct devoting-form :name :sales-type :binding-period)
+
+(def *property-keys*
+  #{:prov_system :prov_string :logistic_string :port25})
+
+(def *sales-types*
+  #{:buy :rent :buy-and-rent})
+
+(def *binding-periods*
+  #{6 12})
