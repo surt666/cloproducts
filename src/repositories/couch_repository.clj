@@ -16,7 +16,7 @@
   (:_id (document-create host db order)))
 
 (defn create-product [product]
-  (:_id (document-create host db (assoc product :meta (meta product)))))
+  (:_id (document-create host db (:id product) (assoc product :meta (meta product)))))
 
 (defn create-subscription [aftale]
   (:_id (document-create host db aftale)))
@@ -37,10 +37,10 @@
       (:rows (view-get host db "views" "get_sortgroup" {:startkey [sg] :endkey [sg {}]})))))
 
 (defn create-pricebook [pricebook]
-  (:_id (document-create host db pricebook)))
+  (:_id (document-create host db (:name pricebook) pricebook)))
 
 (defn create-sales-concept [sales-concept]
-  (:_id (document-create host db sales-concept)))
+  (:_id (document-create host db (:name sales-concept) sales-concept)))
 
 (defn create-contract [contract]
-  (:_id (document-create host db contract)))
+  (:_id (document-create host db (:name contract) contract)))
