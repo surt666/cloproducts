@@ -50,9 +50,9 @@
   (let [l (flatten (opret-alle-leverings-aftaler produkt-ids forbruger inst-id))]
     (let [f (opret-alle-betalings-aftaler produkt-ids betaler)]
       (let [a (struct aftale juridisk l f :aktiv)]
-        (println "Persister abon" (:id a))
-        (println "Persister betalings-aftaler" (:betalings-aftaler a))
+        ;(println "Persister abon" (:id a))
+        ;(println "Persister betalings-aftaler" (:betalings-aftaler a))
         (println "Persister leverings-aftaler" (:leverings-aftaler a))
-       (create-subscription a)))))
+        (create-subscription a)))))
 
 (opret-aftale 111 222 333 [1701001 1301201] 12345)
