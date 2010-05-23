@@ -38,3 +38,9 @@
 
 (defn create-pricebook [pricebook]
   (:_id (document-create host db pricebook)))
+
+(defn create-sales-concept [sales-concept]
+  (:_id (document-create host db sales-concept)))
+
+(defn create-contract [contract]
+  (:_id (document-create host db contract)))

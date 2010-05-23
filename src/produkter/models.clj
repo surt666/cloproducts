@@ -18,4 +18,4 @@
 
 (defstruct sales-concept :name :products)
 
-(defstruct contract :name :sales-concept :pricebook)
+(defstruct contract :name :sales-concept-name :pricebook)
