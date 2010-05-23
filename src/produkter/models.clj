@@ -4,7 +4,7 @@
 
 (defstruct prod :product-id :name :type)
 
-(defstruct product :id :name :type :weight :sortgroup :sort :price :bundle)
+(defstruct product :id :name :type :weight :sortgroup :sort :bundle)
 
 (defstruct customer :id :firstname :lastname :email :address)
 
@@ -12,6 +12,10 @@
 
 (defstruct order :customer :products)
 
-(defstruct prisbog :id :navn :priser)
+(defstruct pricebook :name :prices)
 
-(defstruct pris :id :produkt-id :generel-pris :koda :radio :copydan :digi :rabat :total-pris)
+(defstruct price :product-id :general-price :koda :radio :copydan :digi :discount :total-price)
+
+(defstruct sales-concept :name :products)
+
+(defstruct contract :name :sales-concept :pricebook)

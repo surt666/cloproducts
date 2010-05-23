@@ -28,9 +28,13 @@
     p)))
 
 (defn find-product [id]
-  (document-get host db id))
+  (add-meta
+    (document-get host db id)))
 
 (defn get-sortgroup [sg]
   (map add-meta 
     (map #(:value %)
       (:rows (view-get host db "views" "get_sortgroup" {:startkey [sg] :endkey [sg {}]})))))
+
+(defn create-pricebook [pricebook]
+  (:_id (document-create host db pricebook)))
