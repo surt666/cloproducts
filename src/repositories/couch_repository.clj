@@ -36,6 +36,14 @@
     (map #(:value %)
       (:rows (view-get host db "views" "get_sortgroup" {:startkey [sg] :endkey [sg {}]})))))
 
+(defn get-devoting-forms []
+  (map #(:key %)
+    (:rows (view-get host db "views" "get_devoting_form"))))
+
+(defn get-products []
+  (map #(:key %)
+    (:rows (view-get host db "views" "get_products"))))
+
 (defn create-pricebook [pricebook]
   (:_id (document-create host db (:name pricebook) pricebook)))
 
