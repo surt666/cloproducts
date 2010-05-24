@@ -11,5 +11,7 @@
      [clj-time "0.1.0-SNAPSHOT"]
      [enlive "1.0.0-SNAPSHOT"]]
   :dev-dependencies
-    [[ring/ring-devel "0.2.0"]]
+    [[ring/ring-devel "0.2.0"]
+     [swank-clojure "1.1.0"]
+     [leiningen/lein-swank "1.2.0-SNAPSHOT"]]
   :main helloworld1)

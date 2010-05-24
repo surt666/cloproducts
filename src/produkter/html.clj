@@ -1,10 +1,12 @@
 (ns produkter.html
   (:use produkter.roles
         produkter.models
+        ring.util.response
         repositories.couch-repository
         hiccup.page-helpers
         hiccup.core
-        hiccup.form-helpers))
+        hiccup.form-helpers
+        clojure.contrib.seq-utils))
 
 (defn layout [title header & body]
   (html
@@ -122,29 +124,49 @@
     (layout "Edit product" "En Header"
       (form-to [:post "/viewproducts"]
         (hidden-field :update "true")
+        (hidden-field :id id)
         (productform p)
-        (hidden-field :rev (:_rev p))
         (submit-button "Opdater")))))
 
 (defn viewproducts [req]
   (if (= "true" (get-in req [:params "create"]))
-    (do (println "create")
     (create-product (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
-      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"])))))
+      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"]))))
   (if (= "true" (get-in req [:params "update"]))
-    (do (println "update")
-    (update-product (assoc (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
-      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"])) :_rev (get-in req [:params "rev"])))))
+    (update-product (assoc (find-product (get-in req [:params "id"])) :name (get-in req [:params "name"]) :type (get-in req [:params "type"]) :weight (get-in req [:params "weight"])
+      :sortgroup (get-in req [:params "sortgroup"]) :sort (get-in req [:params "sort"]) :bundlesproducts (get-in req [:params "bundle-products"])
+      :devoting-form (get-in req [:params "devoting-form"]))))
   (layout "Viev Products" "En header"
     (html
       [:table
        [:tr [:th "Varenummer"] [:th "Produkt"]]
       (for [p (get-products)]
-        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href (str "/editproduct/" (p 1))} "Editer"]] [:td [:a {:href (str "/addmeta/" (p 1))} "Tilf&oslash;j meta"]]])
+        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href (str "/editproduct/" (p 1))} "Editer"]] [:td [:a {:href (str "/viewmeta/" (p 1))} "Se meta"]]])
     ])))
 
 (defn addmeta [id]
   (let [p (find-product id)]
     (layout "Add Meta" "En Header"
-      (form-to [:post "/viewproducts"]
-        [:h2 "Temp"]))))
+      (form-to [:post "/savemeta"]
+        (hidden-field :metaupdate "true")
+        (hidden-field :id id)
+        [:table
+          [:tr [:td (drop-down :metakey *property-keys* nil)] [:td (text-field :metaval nil)]]]
+        (submit-button "Opdater")))))
+
+(defn savemeta [req]
+  (let [id (get-in req [:params "id"])]
+    (if (= "true" (get-in req [:params "metaupdate"]))
+      (let [p (find-product id)]
+        (update-product (with-meta p (conj {(get-in req [:params "metakey"]) (get-in req [:params "metaval"])} (meta p))))))
+    (redirect (str "/viewmeta/" id))))
+
+(defn viewmeta [id]
+  (let [p (find-product id)]
+    (layout "Se Meta" "En Header"
+      (html
+        [:table
+         [:tr [:th "Key"] [:th "Value"]]
+         (for [key (keys (meta p))]
+          [:tr [:td key] [:td ((meta p) key)]])]
+        [:a {:href (str "/addmeta/" id)} "Tilf&oslash;j meta"][:a {:href "/viewproducts"} "Vis produkter"]))))

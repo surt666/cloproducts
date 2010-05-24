@@ -5,6 +5,7 @@
         ring.middleware.stacktrace
         ring.middleware.session
         ring.middleware.session.memory
+        ring.util.response
         ring.handler.dump
         produkter.html)
   (:require [compojure.route :as route]))
@@ -32,7 +33,10 @@
     (viewproducts req))
   (GET "/viewproducts" req
     (viewproducts req))
-  
+  (GET "/viewmeta/:id" [id]
+    (viewmeta id))
+  (POST "/savemeta" req
+    (savemeta req))
   (GET "/set-session"  [] {:body "set session" :session {:a-key "a value"}})
   (GET "/read-session" {s :session} {:body (str "session: " s)})
   (GET "/dump-request" r 
