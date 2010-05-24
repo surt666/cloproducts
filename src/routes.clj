@@ -14,9 +14,6 @@
   (GET "/" req (index))
 ;  (POST "/mandatory" req
 ;    (mandatory (get-in req [:params "bba"]) (get-in req [:params "tva"])))
-  (GET "/user/:id" [id]
-    (str "<h1>Hello user " id "</h1>"))
-  
   (POST "/main" [contractname]
     (main contractname))
   (POST "/mandatory" [tva bba]
@@ -29,10 +26,13 @@
     (newproduct))
   (GET "/editproduct/:id" [id]
     (editproduct id))
+  (GET "/addmeta/:id" [id]
+    (addmeta id))
   (POST "/viewproducts" req
     (viewproducts req))
   (GET "/viewproducts" req
     (viewproducts req))
+  
   (GET "/set-session"  [] {:body "set session" :session {:a-key "a value"}})
   (GET "/read-session" {s :session} {:body (str "session: " s)})
   (GET "/dump-request" r 

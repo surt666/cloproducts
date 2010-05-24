@@ -43,7 +43,7 @@
 
 (defn index []
   (layout "KONTRAKT" "En header"
-    (form-to [:POST "/main"]
+    (form-to [:post "/main"]
       (html
         [:table
           [:tr [:td (label :contractname "Kontrakt")] [:td (text-field :contractname "")]]])
@@ -64,7 +64,7 @@
 (defn mandatory [tva bba]
   {:session {:order (struct order {} {:tva tva :bba bba})}
    :body (layout "MANDATORY" "En header"
-    (form-to [:POST "/user-info"]
+    (form-to [:post "/user-info"]
       (if (not (= tva nil))
         (present-sortgroup "tvs"))
       (if (not (= bba nil))
@@ -80,7 +80,7 @@
     (println "P2" products)
     {:session {:order (struct order cust products)}
      :body (layout "USER" "En header"
-       (form-to [:POST "/invoice"]
+       (form-to [:post "/invoice"]
        [:table
          [:tr
            [:td (label :firstname "Fornavn") (text-field :firstname "")]
@@ -112,7 +112,7 @@
 
 (defn newproduct []
   (layout "New Product" "En header"
-    (form-to [:POST "/viewproducts"]
+    (form-to [:post "/viewproducts"]
       (hidden-field :create "true")
       (productform nil)
       (submit-button "Opret"))))
@@ -120,23 +120,31 @@
 (defn editproduct [id]
   (let [p (if (not (nil? id)) (find-product id) nil)]
     (layout "Edit product" "En Header"
-      (form-to [:POST "/viewproducts"]
+      (form-to [:post "/viewproducts"]
         (hidden-field :update "true")
         (productform p)
+        (hidden-field :rev (:_rev p))
         (submit-button "Opdater")))))
 
 (defn viewproducts [req]
   (if (= "true" (get-in req [:params "create"]))
+    (do (println "create")
     (create-product (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
-      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"]))))
+      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"])))))
   (if (= "true" (get-in req [:params "update"]))
-    (update-product (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
-      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"]))))
+    (do (println "update")
+    (update-product (assoc (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
+      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"])) :_rev (get-in req [:params "rev"])))))
   (layout "Viev Products" "En header"
     (html
       [:table
        [:tr [:th "Varenummer"] [:th "Produkt"]]
       (for [p (get-products)]
-        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href "#" } "Editer"]] [:td [:a {:href "#" } "Tilf&oslash;j meta"]]])
+        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href (str "/editproduct/" (p 1))} "Editer"]] [:td [:a {:href (str "/addmeta/" (p 1))} "Tilf&oslash;j meta"]]])
     ])))
 
+(defn addmeta [id]
+  (let [p (find-product id)]
+    (layout "Add Meta" "En Header"
+      (form-to [:post "/viewproducts"]
+        [:h2 "Temp"]))))
