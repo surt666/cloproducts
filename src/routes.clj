@@ -26,6 +26,8 @@
     (newproduct))
   (POST "/viewproducts" req
     (viewproducts req))
+  (GET "/viewproducts" req
+    (viewproducts req))
   (GET "/set-session"  [] {:body "set session" :session {:a-key "a value"}})
   (GET "/read-session" {s :session} {:body (str "session: " s)})
   (GET "/dump-request" r 

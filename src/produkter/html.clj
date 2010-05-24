@@ -120,7 +120,11 @@
     (create-product (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
       (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"]))))
   (layout "Viev Products" "En header"
+    (println (get-products))
     (html
-      [:h2 "LALA"]
-    )))
+      [:table
+       [:tr [:th "Varenummer"] [:th "Produkt"]]
+      (for [p (get-products)]
+        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href "#" } "Editer"]] [:td [:a {:href "#" } "Tilf&oslash;j meta"]]])
+    ])))
 
