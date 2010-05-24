@@ -18,6 +18,9 @@
 (defn create-product [product]
   (:_id (document-create host db (:id product) (assoc product :meta (meta product)))))
 
+(defn update-product [product]
+  (:_id (document-update host db (:id product) (assoc product :meta (meta product)))))
+
 (defn create-subscription [aftale]
   (:_id (document-create host db aftale)))
 

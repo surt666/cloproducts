@@ -14,6 +14,9 @@
   (GET "/" req (index))
 ;  (POST "/mandatory" req
 ;    (mandatory (get-in req [:params "bba"]) (get-in req [:params "tva"])))
+  (GET "/user/:id" [id]
+    (str "<h1>Hello user " id "</h1>"))
+  
   (POST "/main" [contractname]
     (main contractname))
   (POST "/mandatory" [tva bba]
@@ -24,6 +27,8 @@
     (invoice req))
   (GET "/newproduct" req
     (newproduct))
+  (GET "/editproduct/:id" [id]
+    (editproduct id))
   (POST "/viewproducts" req
     (viewproducts req))
   (GET "/viewproducts" req

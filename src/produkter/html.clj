@@ -101,26 +101,38 @@
   (layout "INVOICE" "En header"
     (html [:h2 (str (req :session) :order)])))
 
+(defn productform [product]
+  (html
+    [:table
+      [:tr [:td (label :id "Varenummer")] [:td (text-field :id (:id product))] [:td (label :name "Navn")] [:td (text-field :name (:name product))]]
+      [:tr [:td (label :type "Produkt type")] [:td (drop-down :type *product-type* (:type product))] [:td (label :weight "Vaegt")] [:td (text-field :weight (:weight product))]]
+      [:tr [:td (label :sortgroup "Sorterings gruppe")] [:td (text-field :sortgroup (:sortgroup product))] [:td (label :sort "Sortering")] [:td (text-field :sort (:sort product))]]
+      [:tr [:td (label :bundle-products "Bundle produkter")] [:td [:select {:id "bundle-products" :name "bundle-products" :multiple "multiple" :size "7"} (select-options (get-products) (:bundle-products product))]] [:td (label :devoting-form "Afsaetnings form")] [:td (drop-down :devoting-form (get-devoting-forms) (:devoting-form product))]]
+      ]))
 
 (defn newproduct []
   (layout "New Product" "En header"
     (form-to [:POST "/viewproducts"]
       (hidden-field :create "true")
-      (html
-        [:table
-          [:tr [:td (label :id "Varenummer")] [:td (text-field :id "")] [:td (label :name "Navn")] [:td (text-field :name "")]]
-          [:tr [:td (label :type "Produkt type")] [:td (drop-down :type *product-type* nil)] [:td (label :weight "Vaegt")] [:td (text-field :weight "")]]
-          [:tr [:td (label :sortgroup "Sorterings gruppe")] [:td (text-field :sortgroup "")] [:td (label :sort "Sortering")] [:td (text-field :sort "")]]
-          [:tr [:td (label :bundle-products "Bundle produkter")] [:td [:select {:id "bundle-products" :name "bundle-products" :multiple "multiple" :size "7"} (select-options (get-products) nil)]] [:td (label :devoting-form "Afsaetnings form")] [:td (drop-down :devoting-form (get-devoting-forms) nil)]]
-          ])
+      (productform nil)
       (submit-button "Opret"))))
+
+(defn editproduct [id]
+  (let [p (if (not (nil? id)) (find-product id) nil)]
+    (layout "Edit product" "En Header"
+      (form-to [:POST "/viewproducts"]
+        (hidden-field :update "true")
+        (productform p)
+        (submit-button "Opdater")))))
 
 (defn viewproducts [req]
   (if (= "true" (get-in req [:params "create"]))
     (create-product (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
       (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"]))))
+  (if (= "true" (get-in req [:params "update"]))
+    (update-product (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
+      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"]))))
   (layout "Viev Products" "En header"
-    (println (get-products))
     (html
       [:table
        [:tr [:th "Varenummer"] [:th "Produkt"]]
