@@ -17,8 +17,8 @@
 ;    (mandatory (get-in req [:params "bba"]) (get-in req [:params "tva"])))
   (POST "/main" [contractname]
     (main contractname))
-  (POST "/mandatory" [tva bba]
-    (mandatory tva bba))
+  (POST "/mandatory" req
+    (mandatory req))
   (POST "/user-info" req
     (user-info req))
   (POST "/invoice" req

@@ -13,5 +13,5 @@
   :dev-dependencies
     [[ring/ring-devel "0.2.0"]
      [swank-clojure "1.1.0"]
-     [leiningen/lein-swank "1.2.0-SNAPSHOT"]]
-  :main helloworld1)
+     [leiningen/lein-swank "1.1.0"]]
+  :main routes)

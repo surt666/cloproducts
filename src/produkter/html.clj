@@ -25,14 +25,17 @@
         ]]]))
 
 (defn price-for-product [product-id prices prices-general]
+  "Try and find price in contract specific pricebook. If not there find it in general pricebook.
+   filter is supposed to be lazy so we don't need to break out of the loop"
   (let [price (first (filter #(= product-id (:product-id %)) prices))]
     (if (nil? price)
       (first (filter #(= product-id (:product-id %)) prices-general))
       price)))
 
-(defn present-sortgroup [sg products prices]
-  (let [productsg (get-sortgroup sg)
-        prices-general (:prices (find-pricebook "YouSee"))]
+(defn present-sortgroup [sg products prices prices-general]
+  "Get products belonging to the sortgroup, for the products available in the contract.
+  Takes a list of contract specific prices, and the general prices, so as not to calculate these again and again"
+  (let [productsg (get-sortgroup sg)]
     (html
       [:table
       (for [p productsg]
@@ -56,31 +59,32 @@
     (let [sales-concept-name (:sales-concept-name contract)
           pricebook-name (:pricebook contract)]
       (let [prices (:prices (find-pricebook pricebook-name))
+            prices-general (:prices (find-pricebook "YouSee"))
             products (:products (find-sales-concept sales-concept-name))]
-        {:session {:products products :prices prices}
+        {:session {:products products :prices prices :prices-general prices-general}
          :body (layout "MAIN" "En header"
           (form-to [:POST "/mandatory"]
-            (present-sortgroup "tva" products prices) (present-sortgroup "bba" products prices)
+            (present-sortgroup "tva" products prices prices-general) (present-sortgroup "bba" products prices prices-general)
             (submit-button "Next")))}))))
 
-(defn mandatory [tva bba]
+(defn mandatory [req]
+  (let [prices ((req :session) :prices)
+        prices-general ((req :session) :prices-general)
+        products ((req :session) :products)
+        tva (get-in req [:params "tva"])
+        bba (get-in req [:params "bba"])]
   {:session {:order (struct order {} {:tva tva :bba bba})}
    :body (layout "MANDATORY" "En header"
     (form-to [:post "/user-info"]
       (if (not (= tva nil))
-        (present-sortgroup "tvs"))
+        (present-sortgroup "tvs" products prices prices-general))
       (if (not (= bba nil))
-        (html (present-sortgroup "bbs") (present-sortgroup "bbt")))
-      (submit-button "Next")))})
+        (html (present-sortgroup "bbs" products prices prices-general) (present-sortgroup "bbt" products prices prices-general)))
+      (submit-button "Next")))}))
 
 (defn user-info [req]
-  (println "PO" (((req :session) :order) :products))
-  (let [prods (((req :session) :order) :products)
-        cust (((req :session) :order) :customer)]
-    (println "P1" prods "|" (get-in req [:params "tvs"]))
-    (let [products (assoc prods :tvs (get-in req [:params "tvs"]) :bbs (get-in req [:params "bbs"]))]
-    (println "P2" products)
-    {:session {:order (struct order cust products)}
+  (let [order ((req :session) :order)]
+    {:session {:order (assoc order :products (conj (:products order) {:tvs (get-in req [:params "tvs"]) :bbs (get-in req [:params "bbs"]) :bbt (get-in req [:params "bbt"])}))}
      :body (layout "USER" "En header"
        (form-to [:post "/invoice"]
        [:table
@@ -96,12 +100,14 @@
          [:tr
            [:td (label :zip "Post Nr.") (text-field :zip "")]
            [:td (label :city "by") (text-field :city "")]]]
-         (submit-button "Next")))})))
+         (submit-button "Next")))}))
 
 (defn invoice [req]
-  (println "POI" (((req :session) :order) :products))
-  (layout "INVOICE" "En header"
-    (html [:h2 (str (req :session) :order)])))
+  (let [order ((req :session) :order)]
+    (let [updated-order (assoc order :customer {:firstname (get-in req [:params "firstname"]) :lastname (get-in req [:params "lastname"])})]
+      {:session {:order updated-order}
+       :body (layout "INVOICE" "En header"
+        (html [:h2 (str updated-order)]))})))
 
 (defn productform [product]
   (html
