@@ -68,7 +68,7 @@
         {:session {:products products :prices prices :prices-general prices-general}
          :body (layout "MAIN" (header)
           (form-to [:POST "/mandatory"]
-            (html (present-sortgroup "tva" products prices prices-general) (present-sortgroup "bba" products prices prices-general) (present-sortgroup "BU" products prices prices-general))
+            (html (present-sortgroup "tva" products prices prices-general) (present-sortgroup "bba" products prices prices-general) (present-sortgroup "mobb" products prices prices-general))
             (submit-button "Next")))}))))
 
 (defn mandatory [req]
