@@ -140,7 +140,7 @@
 
 (defn viewproducts [req]
   (if (= "true" (get-in req [:params "create"]))
-    (create-product (struct product (get-in req [:params "id"]) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
+    (create-product (struct product (Integer/parseInt (get-in req [:params "id"])) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
       (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"]))))
   (if (= "true" (get-in req [:params "update"]))
     (update-product (assoc (find-product (get-in req [:params "id"])) :name (get-in req [:params "name"]) :type (get-in req [:params "type"]) :weight (get-in req [:params "weight"])
