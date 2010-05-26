@@ -24,6 +24,10 @@
           "Totalt fed Footer"
         ]]]))
 
+(defn header []
+  (html
+    [:table {:border "1"} [:tr [:td [:a {:href "/viewproducts"} "Se Produkter"]] [:td [:a {:href "/"} "Bestil"]] [:td [:a {:href "/newproduct"} "Opret produkt"]]]]))
+
 (defn price-for-product [product-id prices prices-general]
   "Try and find price in contract specific pricebook. If not there find it in general pricebook.
    filter is supposed to be lazy so we don't need to break out of the loop"
@@ -38,7 +42,7 @@
   (let [productsg (get-sortgroup sg)]
     (html
       [:table
-      (for [p productsg]
+      (for [p productsg]        
         (if (not (empty? (filter #(= (:id p) %) products)))
           [:tr
            [:td (radio-button sg false (:id p))]
@@ -47,7 +51,7 @@
            [:td (:prov_system (meta p))]]))])))
 
 (defn index []
-  (layout "KONTRAKT" "En header"
+  (layout "KONTRAKT" (header)
     (form-to [:post "/main"]
       (html
         [:table
@@ -60,11 +64,11 @@
           pricebook-name (:pricebook contract)]
       (let [prices (:prices (find-pricebook pricebook-name))
             prices-general (:prices (find-pricebook "YouSee"))
-            products (:products (find-sales-concept sales-concept-name))]
+            products (:products (find-sales-concept sales-concept-name))]        
         {:session {:products products :prices prices :prices-general prices-general}
-         :body (layout "MAIN" "En header"
+         :body (layout "MAIN" (header)
           (form-to [:POST "/mandatory"]
-            (present-sortgroup "tva" products prices prices-general) (present-sortgroup "bba" products prices prices-general)
+            (html (present-sortgroup "tva" products prices prices-general) (present-sortgroup "bba" products prices prices-general) (present-sortgroup "BU" products prices prices-general))
             (submit-button "Next")))}))))
 
 (defn mandatory [req]
@@ -74,7 +78,7 @@
         tva (get-in req [:params "tva"])
         bba (get-in req [:params "bba"])]
   {:session {:order (struct order {} {:tva tva :bba bba})}
-   :body (layout "MANDATORY" "En header"
+   :body (layout "MANDATORY" (header)
     (form-to [:post "/user-info"]
       (if (not (= tva nil))
         (present-sortgroup "tvs" products prices prices-general))
@@ -85,7 +89,7 @@
 (defn user-info [req]
   (let [order ((req :session) :order)]
     {:session {:order (assoc order :products (conj (:products order) {:tvs (get-in req [:params "tvs"]) :bbs (get-in req [:params "bbs"]) :bbt (get-in req [:params "bbt"])}))}
-     :body (layout "USER" "En header"
+     :body (layout "USER" (header)
        (form-to [:post "/invoice"]
        [:table
          [:tr
@@ -106,7 +110,7 @@
   (let [order ((req :session) :order)]
     (let [updated-order (assoc order :customer {:firstname (get-in req [:params "firstname"]) :lastname (get-in req [:params "lastname"])})]
       {:session {:order updated-order}
-       :body (layout "INVOICE" "En header"
+       :body (layout "INVOICE" (header)
         (html [:h2 (str updated-order)]))})))
 
 (defn productform [product]
@@ -119,7 +123,7 @@
       ]))
 
 (defn newproduct []
-  (layout "New Product" "En header"
+  (layout "New Product" (header)
     (form-to [:post "/viewproducts"]
       (hidden-field :create "true")
       (productform nil)
@@ -127,7 +131,7 @@
 
 (defn editproduct [id]
   (let [p (if (not (nil? id)) (find-product id) nil)]
-    (layout "Edit product" "En Header"
+    (layout "Edit product" (header)
       (form-to [:post "/viewproducts"]
         (hidden-field :update "true")
         (hidden-field :id id)
@@ -142,7 +146,7 @@
     (update-product (assoc (find-product (get-in req [:params "id"])) :name (get-in req [:params "name"]) :type (get-in req [:params "type"]) :weight (get-in req [:params "weight"])
       :sortgroup (get-in req [:params "sortgroup"]) :sort (get-in req [:params "sort"]) :bundlesproducts (get-in req [:params "bundle-products"])
       :devoting-form (get-in req [:params "devoting-form"]))))
-  (layout "Viev Products" "En header"
+  (layout "Viev Products" (header)
     (html
       [:table
        [:tr [:th "Varenummer"] [:th "Produkt"]]
@@ -152,7 +156,7 @@
 
 (defn addmeta [id]
   (let [p (find-product id)]
-    (layout "Add Meta" "En Header"
+    (layout "Add Meta" (header)
       (form-to [:post "/savemeta"]
         (hidden-field :metaupdate "true")
         (hidden-field :id id)
@@ -169,10 +173,11 @@
 
 (defn viewmeta [id]
   (let [p (find-product id)]
-    (layout "Se Meta" "En Header"
+    (layout "Se Meta" (header)
       (html
         [:table
          [:tr [:th "Key"] [:th "Value"]]
          (for [key (keys (meta p))]
           [:tr [:td key] [:td ((meta p) key)]])]
         [:a {:href (str "/addmeta/" id)} "Tilf&oslash;j meta"][:a {:href "/viewproducts"} "Vis produkter"]))))
+

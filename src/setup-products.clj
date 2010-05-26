@@ -58,3 +58,11 @@
   (create-devoting-form (struct devoting-form :buy :buy 6))
   (create-devoting-form (struct devoting-form :rent-and-buy :rent-and-buy 6))
   (create-devoting-form (struct devoting-form :rent-12 :rent 12)))
+
+(defn create-all []
+  (create-products)
+  (create-products-mandatory)
+  (create-products)
+  (create-sales-concepts)
+  (create-contracts)
+  (create-devoting-forms))
