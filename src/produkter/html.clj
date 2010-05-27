@@ -26,7 +26,8 @@
 
 (defn header []
   (html
-    [:table {:border "1"} [:tr [:td [:a {:href "/viewproducts"} "Se Produkter"]] [:td [:a {:href "/"} "Bestil"]] [:td [:a {:href "/newproduct"} "Opret produkt"]]]]))
+    [:table {:border "1"} [:tr [:td [:a {:href "/viewproducts"} "Se Produkter"]] [:td [:a {:href "/"} "Bestil"]]
+                           [:td [:a {:href "/newproduct"} "Opret produkt"]] [:td [:a {:href "/viewpricebooks"} "Se prisb&oslash;ger"]]]]))
 
 (defn price-for-product [product-id prices prices-general]
   "Try and find price in contract specific pricebook. If not there find it in general pricebook.
@@ -181,3 +182,70 @@
           [:tr [:td key] [:td ((meta p) key)]])]
         [:a {:href (str "/addmeta/" id)} "Tilf&oslash;j meta"][:a {:href "/viewproducts"} "Vis produkter"]))))
 
+(defn viewpricebooks []
+  (let [pricebooks (get-pricebooks)]
+    (layout "Prisb&oslash;ger" (header)
+      (html
+        [:table
+         [:tr [:th "Prisbog"]]
+         (for [p pricebooks]
+           [:tr [:td p]
+                [:td [:a {:href (str "/addproducttopricebook/" p)} "Tilf&oslash;j produkt"]]
+                [:td [:a {:href (str "/showproductsinpricebook/" p)} "Vis produkt priser"]]])]))))
+
+(defn calculate-vat [general-price]
+  (* 0.25 general-price))
+
+(defn saveprice [pricebook-id product-id general-price koda radio copydan digi discount]
+  (let [pricebook (find-pricebook pricebook-id)]
+    (let [prices (:prices pricebook)]
+      (let [prices-edited (filter #(not (= (Integer/parseInt product-id) (:product-id %))) prices)]
+      (update-pricebook (assoc pricebook :prices (conj prices-edited (struct price (Integer/parseInt product-id) (Double/parseDouble general-price) (calculate-vat (Double/parseDouble general-price))
+        (Double/parseDouble koda) (Double/parseDouble radio) (Double/parseDouble copydan) (Double/parseDouble digi) (Double/parseDouble discount)
+        (- (+ (Double/parseDouble general-price) (calculate-vat (Double/parseDouble general-price)) (Double/parseDouble koda) (Double/parseDouble radio) (Double/parseDouble copydan) (Double/parseDouble digi) (Double/parseDouble discount))))))))))
+  (redirect (str "/showproductsinpricebook/" pricebook-id)))
+
+(defn priceform [price]
+  (html
+    [:table
+        [:tr [:td (label :product-id "Varenummer")] [:td (drop-down :product-id (get-products) (:product-id price))]]
+        [:tr [:td (label :general-price "Pris")] [:td (text-field :general-price (if (not (nil? price)) (:general-price price) 0))]]
+        [:tr [:td (label :koda "Koda")] [:td (text-field :koda (if (not (nil? price)) (:koda price) 0))]]
+        [:tr [:td (label :radio "RadiKoda")] [:td (text-field :radio (if (not (nil? price)) (:radio price) 0))]]
+        [:tr [:td (label :copydan "CopyDan")] [:td (text-field :copydan (if (not (nil? price)) (:copydan price) 0))]]
+        [:tr [:td (label :digi "Digital Rettigheder")] [:td (text-field :digi (if (not (nil? price)) (:digi price) 0))]
+        [:tr [:td (label :discount "Rabat")] [:td (text-field :discount (if (not (nil? price)) (:discount price) 0))]]]]))
+
+(defn add-product-to-pricebook [id]
+  (layout (str "Tilf&oslash;j produkt til prisbog " id) (header)
+    (form-to [:post "/saveprice"]
+      (hidden-field :pricebook-id id)
+      [:h2 (str "Tilf&oslash;j produkt til prisbog " id)]
+      (priceform nil)
+      (submit-button "Tilf&oslash;j pris"))))
+
+(defn show-products-in-pricebook [id]
+  (let [pricebook (find-pricebook id)]
+    (layout (str "Vis produkter i prisbog " id) (header)
+      [:table
+        [:tr [:th "Varenummer"] [:th "Pris"] [:th "Koda"] [:th "RadiKoda"] [:th "CopyDan"] [:th "Digital Rettigheder"] [:th "Rabat"] [:th "Moms"] [:th "Total Pris"]]
+        (for [price (:prices pricebook)]
+          [:tr [:td (:product-id price)]  [:td (:general-price price)] [:td (:koda price)] [:td (:radio price)]
+             [:td (:copydan price)] [:td (:digi price)] [:td (:discount price)] [:td (:vat price)] [:td (:total-price price)]
+             [:td [:a {:href (str "/editprice/" id "/" (:product-id price))} "Opdater pris"]]
+             [:td [:a {:href (str "/deleteprice/" id "/" (:product-id price))} "Slet pris"]]])])))
+
+(defn editprice [pricebook-id product-id]
+  (layout (str "Ret produktpris i prisbog " pricebook-id) (header)
+    (form-to [:post "/saveprice"]
+      (hidden-field :pricebook-id pricebook-id)
+      [:h2 (str "Ret produktpris i prisbog " pricebook-id)]
+      (priceform (first (filter #(= (Integer/parseInt product-id) (:product-id %)) (:prices (find-pricebook pricebook-id)))))
+      (submit-button "Ret pris"))))
+
+(defn deleteprice [pricebook-id product-id]
+  (let [pricebook (find-pricebook pricebook-id)]
+    (let [prices (:prices pricebook)]
+      (let [prices-edited (filter #(not (= (Integer/parseInt product-id) (:product-id %))) prices)]
+        (update-pricebook (assoc pricebook :prices prices-edited)))))
+  (redirect (str "/showproductsinpricebook/" pricebook-id)))

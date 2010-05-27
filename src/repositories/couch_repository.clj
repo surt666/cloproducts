@@ -50,6 +50,9 @@
 (defn create-pricebook [pricebook]
   (:_id (document-create host db (:name pricebook) pricebook)))
 
+(defn update-pricebook [pricebook]
+  (:_id (document-update host db (:name pricebook) pricebook)))
+
 (defn create-sales-concept [sales-concept]
   (:_id (document-create host db (:name sales-concept) sales-concept)))
 
@@ -67,3 +70,7 @@
 
 (defn create-devoting-form [devoting-form]
   (:_id (document-create host db (:name devoting-form) devoting-form)))
+
+(defn get-pricebooks []
+  (map #(:key %)
+    (:rows (view-get host db "views" "get-pricebooks"))))

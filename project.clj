@@ -1,5 +1,5 @@
-(defproject clotest "1.0.0-SNAPSHOT"
-  :description "Clojure test projekt"
+(defproject cloproducts "1.0.0-SNAPSHOT"
+  :description "Clojure produkt og abonnement projekt"
   :dependencies
     [[org.clojure/clojure "1.1.0"]
      [org.clojure/clojure-contrib "1.1.0"]

@@ -37,6 +37,18 @@
     (viewmeta id))
   (POST "/savemeta" req
     (savemeta req))
+  (GET "/viewpricebooks" req
+    (viewpricebooks))
+  (GET "/addproducttopricebook/:id" [id]
+    (add-product-to-pricebook id))
+  (GET "/showproductsinpricebook/:id" [id]
+    (show-products-in-pricebook id))
+  (POST "/saveprice" [pricebook-id product-id general-price koda radio copydan digi discount]
+    (saveprice pricebook-id product-id general-price koda radio copydan digi discount))
+  (GET "/editprice/:pricebook/:productid" [pricebook productid]
+    (editprice pricebook productid))
+  (GET "/deleteprice/:pricebook/:productid" [pricebook productid]
+    (deleteprice pricebook productid))
   (GET "/set-session"  [] {:body "set session" :session {:a-key "a value"}})
   (GET "/read-session" {s :session} {:body (str "session: " s)})
   (GET "/dump-request" r 
