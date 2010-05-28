@@ -23,7 +23,7 @@
 (defstruct devoting-form :name :salestype :bindingperiod)
 
 (def *property-keys*
-  #{:prov_system :prov_string :logistic_string :port25})
+  #{:prov_system :prov_string :logistic_string :port25 :prov_must_have_sn})
 
 (def *sales-types*
   #{:buy :rent :buy-and-rent})
@@ -32,4 +32,4 @@
   #{6 12})
 
 (def *product-type*
-  #{:tv :bb :tlf :mobb :dtv :bundle})
+  #{"tv" "bb" "tlf" "mobb" "dtv" "bundle"})

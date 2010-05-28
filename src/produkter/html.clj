@@ -24,10 +24,22 @@
           "Totalt fed Footer"
         ]]]))
 
+(defelem select-options-multiple
+  "Creates a seq of option tags from a collection and an optional coll of selected vals."
+  ([coll] (select-options-multiple coll nil))
+  ([coll selected-coll]
+    (for [x coll]
+      (if (sequential? x)
+        (let [[text val] x]          
+          [:option {:value val :selected (not (empty? (filter #(= val %) selected-coll)))} text])
+        [:option {:selected (not (empty? (filter #(= val %) selected-coll)))} x]))))
+
 (defn header []
   (html
-    [:table {:border "1"} [:tr [:td [:a {:href "/viewproducts"} "Se Produkter"]] [:td [:a {:href "/"} "Bestil"]]
-                           [:td [:a {:href "/newproduct"} "Opret produkt"]] [:td [:a {:href "/viewpricebooks"} "Se prisb&oslash;ger"]]]]))
+    [:table {:border "1"}
+     [:tr
+      [:td [:a {:href "/viewproducts"} "Se Produkter"]] [:td [:a {:href "/"} "Bestil"]]
+      [:td [:a {:href "/newproduct"} "Opret produkt"]] [:td [:a {:href "/viewpricebooks"} "Se prisb&oslash;ger"]]]]))
 
 (defn price-for-product [product-id prices prices-general]
   "Try and find price in contract specific pricebook. If not there find it in general pricebook.
@@ -120,7 +132,7 @@
       [:tr [:td (label :id "Varenummer")] [:td (text-field :id (:id product))] [:td (label :name "Navn")] [:td (text-field :name (:name product))]]
       [:tr [:td (label :type "Produkt type")] [:td (drop-down :type *product-type* (:type product))] [:td (label :weight "Vaegt")] [:td (text-field :weight (:weight product))]]
       [:tr [:td (label :sortgroup "Sorterings gruppe")] [:td (text-field :sortgroup (:sortgroup product))] [:td (label :sort "Sortering")] [:td (text-field :sort (:sort product))]]
-      [:tr [:td (label :bundle-products "Bundle produkter")] [:td [:select {:id "bundle-products" :name "bundle-products" :multiple "multiple" :size "7"} (select-options (get-products) (:bundle-products product))]] [:td (label :devoting-form "Afsaetnings form")] [:td (drop-down :devoting-form (get-devoting-forms) (:devoting-form product))]]
+      [:tr [:td (label :bundle-products "Bundle produkter")] [:td [:select {:id "bundle-products" :name "bundle-products" :multiple "multiple" :size "7"} (select-options-multiple (get-products) (:bundle-products product))]] [:td (label :devoting-form "Afsaetnings form")] [:td (drop-down :devoting-form (get-devoting-forms) (:devoting-form product))]]
       ]))
 
 (defn newproduct []
@@ -142,10 +154,10 @@
 (defn viewproducts [req]
   (if (= "true" (get-in req [:params "create"]))
     (create-product (struct product (Integer/parseInt (get-in req [:params "id"])) (get-in req [:params "name"]) (get-in req [:params "type"]) (get-in req [:params "weight"])
-      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "bundle-products"]) (get-in req [:params "devoting-form"]))))
+      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (map #(Integer/parseInt &) (get-in req [:params "bundle-products"])) (get-in req [:params "devoting-form"]))))
   (if (= "true" (get-in req [:params "update"]))
     (update-product (assoc (find-product (get-in req [:params "id"])) :name (get-in req [:params "name"]) :type (get-in req [:params "type"]) :weight (get-in req [:params "weight"])
-      :sortgroup (get-in req [:params "sortgroup"]) :sort (get-in req [:params "sort"]) :bundlesproducts (get-in req [:params "bundle-products"])
+      :sortgroup (get-in req [:params "sortgroup"]) :sort (get-in req [:params "sort"]) :bundlesproducts (map #(Integer/parseInt &) (get-in req [:params "bundle-products"]))
       :devoting-form (get-in req [:params "devoting-form"]))))
   (layout "Viev Products" (header)
     (html
