@@ -43,10 +43,10 @@
     (add-product-to-pricebook id))
   (GET "/showproductsinpricebook/:id" [id]
     (show-products-in-pricebook id))
-  (POST "/saveprice" [pricebook-id product-id general-price koda radio copydan digi discount]
-    (saveprice pricebook-id product-id general-price koda radio copydan digi discount))
-  (GET "/editprice/:pricebook/:productid" [pricebook productid]
-    (editprice pricebook productid))
+  (POST "/saveprice" [pricebook-id product-id type general-price koda radio copydan digi discount]
+    (saveprice pricebook-id product-id type general-price koda radio copydan digi discount))
+  (GET "/editprice/:pricebook/:productid/:type" [pricebook productid type]
+    (editprice pricebook productid type))
   (GET "/deleteprice/:pricebook/:productid" [pricebook productid]
     (deleteprice pricebook productid))
   (GET "/set-session"  [] {:body "set session" :session {:a-key "a value"}})

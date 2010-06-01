@@ -9,7 +9,8 @@
      [ring/ring-jetty-adapter "0.2.0"]
      [org.clojars.the-kenny/clojure-couchdb "0.2.1"]
      [clj-time "0.1.0-SNAPSHOT"]
-     [enlive "1.0.0-SNAPSHOT"]]
+     [enlive "1.0.0-SNAPSHOT"]
+     [joda-time "1.6"]]
   :dev-dependencies
     [[ring/ring-devel "0.2.0"]
      [swank-clojure "1.1.0"]

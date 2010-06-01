@@ -24,6 +24,9 @@
 (defn create-subscription [aftale]
   (:_id (document-create host db aftale)))
 
+(defn create-event [event]
+  (:_id (document-create host db event)))
+
 (defn add-meta [p]
   (let [meta (:meta p)]
   (if (not (nil? meta))
@@ -68,9 +71,25 @@
 (defn find-pricebook [pricebook]
   (document-get host db pricebook))
 
+(defn find-price [pricebook product-id]
+  (let [p (find-pricebook pricebook)]
+    (let [price (first (filter #(= product-id (:product-id %)) (:prices p)))]
+      (if (not (nil? price))
+        price
+        (let [y (find-pricebook "YouSee")]
+          (first (filter #(= product-id (:product-id %)) (:prices y))))))))
+
 (defn create-devoting-form [devoting-form]
   (:_id (document-create host db (:name devoting-form) devoting-form)))
 
 (defn get-pricebooks []
   (map #(:key %)
     (:rows (view-get host db "views" "get-pricebooks"))))
+
+(defn get-highest-leverings-aftale-id []
+  (map #(:value %)
+      (:rows (view-get host db "views" "leverings_sequence"))))
+
+(defn get-highest-betalings-aftale-id []
+  (map #(:value %)
+      (:rows (view-get host db "views" "betalings_sequence"))))
