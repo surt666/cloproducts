@@ -23,16 +23,24 @@
     (user-info req))
   (POST "/invoice" req
     (invoice req))
-  (GET "/newproduct" req
-    (newproduct))
-  (GET "/editproduct/:id" [id]
-    (editproduct id))
+  (GET "/newsalesproduct" req
+    (new-sales-product))
+  (GET "/newdeliveryproduct" req
+    (new-delivery-product))
+  (GET "/editsalesproduct/:id" [id]
+    (edit-sales-product id))
+  (GET "/editdeliveryproduct/:id" [id]
+    (edit-delivery-product id))
   (GET "/addmeta/:id" [id]
     (addmeta id))
-  (POST "/viewproducts" req
-    (viewproducts req))
-  (GET "/viewproducts" req
-    (viewproducts req))
+  (POST "/viewsalesproducts" req
+    (view-sales-products req))
+  (GET "/viewsalesproducts" req
+    (view-sales-products req))
+  (POST "/viewdeliveryproducts" req
+    (view-delivery-products req))
+  (GET "/viewdeliveryproducts" req
+    (view-delivery-products req))
   (GET "/viewmeta/:id" [id]
     (viewmeta id))
   (POST "/savemeta" req
@@ -43,9 +51,9 @@
     (add-product-to-pricebook id))
   (GET "/showproductsinpricebook/:id" [id]
     (show-products-in-pricebook id))
-  (POST "/saveprice" [pricebook-id product-id type general-price koda radio copydan digi discount]
-    (saveprice pricebook-id product-id type general-price koda radio copydan digi discount))
-  (GET "/editprice/:pricebook/:productid/:type" [pricebook productid type]
+  (POST "/saveprice" [pricebook-id product-id general-price koda radio copydan digi discount]
+    (saveprice pricebook-id product-id general-price koda radio copydan digi discount))
+  (GET "/editprice/:pricebook/:productid" [pricebook productid type]
     (editprice pricebook productid type))
   (GET "/deleteprice/:pricebook/:productid" [pricebook productid]
     (deleteprice pricebook productid))

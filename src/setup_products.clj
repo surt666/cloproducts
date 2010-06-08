@@ -1,22 +1,22 @@
 (ns setup-products
   (:use repositories.couch-repository
-       produkter.models))
+        produkter.models
+        clj-time.core
+        clj-time.coerce))
 
-(defn create-products []
-  (create-product (struct product 1101001 "Grundpakke" "tv" 1 "tva" 1 nil :rent_6))
-  (create-product (struct product 1101032 "Mellempakke" "tv" 2 "tva" 2 nil :rent_6))
-  (create-product (struct product 1101003 "Fuldpakke" "tv" 3 "tva" 3 nil :rent_6))
-  (create-product (with-meta (struct product 1301001 "Bredbaand 8/1 Mbit/s" "bb" 1 "bba" 1 nil :rent_6) {:prov_system "Stalone" :prov_string "1301001PROV"}))
-  (create-product (with-meta (struct product 1301002 "Bredbaand 15/1 Mbit/s" "bb" 2 "bba" 2 nil :rent_6) {:prov_system "Stalone" :prov_string "1301002PROV"}))
-  (create-product (with-meta (struct product 1301003 "Bredbaand 20/2 Mbit/s" "bb" 3 "bba" 3 nil :rent_6) {:prov_system "Stalone" :prov_string "1301003PROV"}))
-  (create-product (with-meta (struct product 1301004 "Bredbaand 50/3 Mbit/s" "bb" 4 "bba" 4 nil :rent_6) {:prov_system "Stalone" :prov_string "1301004PROV"})))
-
-(defn create-products-mandatory []
-  (create-product (struct product 1121001 "Oprettelse" "tv" 1 "tvs" 1 nil :buy))
-  (create-product (struct product 1321001 "Standard Goer det selv" "bb" 1 "bbs" 1 nil :buy))
-  (create-product (struct product 1321002 "Traadloes Goer det selv" "bb" 2 "bbs" 2 nil :buy))
-  (create-product (struct product 1321003 "Standard Tekniker" "bb" 1 "bbt" 3 nil :buy))
-  (create-product (struct product 1321004 "Traadloes Tekniker" "bb" 2 "bbt" 4 nil :buy)))
+(defn create-sales-products []
+  (create-sales-product (struct sales-product 1101001 "Grundpakke" "Abon" "1" "tva" "1" (vector (create-delivery-product (struct delivery-product "Grundpakke" "TV"))) 6 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1101032 "Mellempakke" "Abon" "2" "tva" "2" (vector (create-delivery-product (struct delivery-product "Mellempakke" "TV"))) 6 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1101003 "Fuldpakke" "Abon" "3" "tva" "3" (vector (create-delivery-product (struct delivery-product "Fuldpakke" "TV"))) 6 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1301001 "Bredbaand 8/1 Mbit/s" "Abon" "1" "bba" "1" (vector (create-delivery-product (with-meta (struct delivery-product "Bredbaand 8/1 Mbit/s" "BB") {:prov_system "Stalone" :prov_string "1301001PROV"}))) 6 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1301002 "Bredbaand 15/1 Mbit/s" "Abon" "2" "bba" "2" (vector (create-delivery-product (with-meta (struct delivery-product "Bredbaand 15/1 Mbit/s" "BB") {:prov_system "Stalone" :prov_string "1301002PROV"}))) 6 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1301003 "Bredbaand 20/2 Mbit/s" "Abon" "3" "bba" "3" (vector (create-delivery-product (with-meta (struct delivery-product "Bredbaand 20/2 Mbit/s" "BB") {:prov_system "Stalone" :prov_string "1301003PROV"}))) 6 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1301004 "Bredbaand 50/3 Mbit/s" "Abon" "4" "bba" "4" (vector (create-delivery-product (with-meta (struct delivery-product "Bredbaand 50/3 Mbit/s" "BB") {:prov_system "Stalone" :prov_string "1301004PROV"}))) 6 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1121001 "Oprettelse" "Engangs" "1" "tvs" "1" (vector (create-delivery-product (struct delivery-product "Oprettelse" "TV"))) 0 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1321001 "Standard Goer det selv" "Engangs" "1" "bbm" "1" (vector (create-delivery-product (struct delivery-product "Standard Goer det selv" "BB"))) 0 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1321002 "Traadloes Goer det selv" "Engangs" "1" "bbm" "2" (vector (create-delivery-product (struct delivery-product "Traadloes Goer det selv" "BB"))) 0 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1321003 "Standard Tekniker" "Engangs" "1" "bbm" "3" (vector (create-delivery-product (struct delivery-product "Standard Tekniker" "BB"))) 0 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil)))
+  (create-sales-product (struct sales-product 1321004 "Traadloes Tekniker" "Engangs" "1" "bbm" "4" (vector (create-delivery-product (struct delivery-product "Traadloes Tekniker" "BB"))) 0 (struct sales-channels (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil (.toString (to-date (now))) nil))))
 
 (defn calculate-vat [general-price]
   (* 0.25 general-price))
@@ -49,17 +49,14 @@
   (create-contract (struct contract "1234567" "IER" "YouSee"))
   (create-contract (struct contract "7654321" "FF" "KAB")))
 
-(defn create-devoting-forms []
-  (create-devoting-form (struct devoting-form :rent_6 :rent 6))
-  (create-devoting-form (struct devoting-form :buy :buy 6))
-  (create-devoting-form (struct devoting-form :rent_and_buy :rent_and_buy 6))
-  (create-devoting-form (struct devoting-form :rent_12 :rent 12)))
+;(defn create-devoting-forms []
+;  (create-devoting-form (struct devoting-form :rent_6 :rent 6))
+;  (create-devoting-form (struct devoting-form :buy :buy 6))
+;  (create-devoting-form (struct devoting-form :rent_and_buy :rent_and_buy 6))
+;  (create-devoting-form (struct devoting-form :rent_12 :rent 12)))
 
 (defn create-all []
-  (doall
-  (create-products)
-  (create-products-mandatory)
-  (create-products)
-  (create-sales-concepts)
-  (create-contracts)
-  (create-devoting-forms)))
+    (create-sales-products)
+    (create-pricebooks)
+    (create-sales-concepts)
+    (create-contracts))

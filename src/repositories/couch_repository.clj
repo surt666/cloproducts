@@ -15,11 +15,17 @@
 (defn create-order [order]
   (:_id (document-create host db order)))
 
-(defn create-product [product]
-  (:_id (document-create host db (:id product) (assoc product :meta (meta product)))))
+(defn create-delivery-product [product]
+  (:_id (document-create host db (assoc product :meta (meta product)))))
 
-(defn update-product [product]
+(defn create-sales-product [product]
+  (:_id (document-create host db (:id product) product)))
+
+(defn update-sales-product [product]
   (:_id (document-update host db (:id product) (assoc product :meta (meta product)))))
+
+(defn update-delivery-product [product]
+  (:_id (document-update host db (:_id product) (assoc product :meta (meta product)))))
 
 (defn create-subscription [aftale]
   (:_id (document-create host db aftale)))
@@ -42,13 +48,18 @@
     (map #(:value %)
       (:rows (view-get host db "views" "get_sortgroup" {:startkey [sg] :endkey [sg {}]})))))
 
-(defn get-devoting-forms []
-  (map #(:key %)
-    (:rows (view-get host db "views" "get_devoting_form"))))
+;(defn get-devoting-forms []
+;  (map #(:key %)
+;    (:rows (view-get host db "views" "get_devoting_form"))))
 
-(defn get-products []
+(defn get-sales-products []
   (map #(:key %)
-    (:rows (view-get host db "views" "get_products"))))
+    (:rows (view-get host db "views" "get_sales_products"))))
+
+(defn get-delivery-products []
+  (map #(:key %)
+    (:rows (view-get host db "views" "get_delivery_products"))))
+
 
 (defn create-pricebook [pricebook]
   (:_id (document-create host db (:name pricebook) pricebook)))
