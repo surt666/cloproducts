@@ -7,14 +7,17 @@
         hiccup.core
         hiccup.form-helpers
         clj-time.format
+        clj-time.core
+        clj-time.coerce
         clojure.contrib.seq-utils))
+
+(def custom-formatter (formatter "dd-MM-yyyy"))
 
 (defn layout [title header & body]
   (html
     (doctype :html4)
-    [:html
-      [:head
-        [:meta {:http-equiv "X-UA-Compatible" :content "IE=EmulateIE7"}]
+    (xhtml-tag "da"
+      [:head        
         [:title (str title)]]
         ;(stylesheet "ideadb.css")]
       [:body
@@ -23,9 +26,9 @@
           body]
         [:div {:id "footer"}
          [:div {:class="wrapper"} [:ul {:class="hnav dotted"} [:li [:a {:href "http://yousee.dk/Nyheder/Overblik.aspx"} "Nyheder"]] [:li [:a {:href "http://yousee.dk/Om_YouSee/Oversigt.aspx"} "Om YouSee"]]
-                                   [:li [:a {:href "http://yousee.dk/Kontakt.aspx"} "Find butik"]] [:li {:class="last"} [:a {:href "http://yousee.dk/Kontakt/Kontakt.aspx"} "Kontakt os"]]]]
+                                   [:li [:a {:href "http://yousee.dk/Kontakt.aspx"} "Find butik"]] [:li {:class="last"} [:a {:href "http://yousee.dk/Kontakt/Kontakt.aspx"} "Kontakt os"]]]
 
-        ]]]))
+        ]]])))
 
 (defelem select-options-multiple
   "Creates a seq of option tags from a collection and an optional coll of selected vals. Based on Hiccup select-options"
@@ -137,10 +140,10 @@
       [:tr [:td (label :sales-type "Salgs type")] [:td (drop-down :sales-type *sales-types* (:type product))] [:td (label :weight "V&aelig;gt")] [:td (text-field :weight (:weight product))]]
       [:tr [:td (label :sortgroup "Sorterings gruppe")] [:td (text-field :sortgroup (:sortgroup product))] [:td (label :sort "Sortering")] [:td (text-field :sort (:sort product))]]
       [:tr [:td (label :delivery-products "Leverings produkter")] [:td [:select {:id "delivery-products" :name "delivery-products" :multiple "multiple" :size "7"} (select-options-multiple (get-delivery-products) (:delivery_products product))]] [:td (label :binding-period "Bindings periode")] [:td (drop-down :binding-period *binding-periods* (:binding_period product))]]
-      [:tr [:td (label :start "Start")] [:td (text-field :start (:start (:sales_channels product)))] [:td (label :end "Slut")] [:td (text-field :end (:end (:sales_channels product)))]]
-      [:tr [:td (label :portal-start "Portal start")] [:td (text-field :portal-start (:portal_start (:sales_channels product)))] [:td (label :portal-end "Portal slut")] [:td (text-field :portal-end (:portal_end (:sales_channels product)))]]
-      [:tr [:td (label :dealer-start "Forhandler start")] [:td (text-field :dealer-start (:dealer_start (:sales_channels product)))] [:td (label :dealer-end "Forhandler slut")] [:td (text-field :dealer-end (:dealer_end (:sales_channels product)))]]
-      [:tr [:td (label :spoc-start "SPOC start")] [:td (text-field :spoc-start (:spoc_start (:sales_channels product)))] [:td (label :spoc-end "SPOC slut")] [:td (text-field :spoc-end (:spoc_end (:sales_channels product)))]]
+      [:tr [:td (label :start "Start")] [:td (text-field :start (if (not (nil? (:start (:sales_channels product)))) (:start (:sales_channels product)) (unparse custom-formatter (now))))] [:td (label :end "Slut")] [:td (text-field :end (:end (:sales_channels product)))]]
+      [:tr [:td (label :portal-start "Portal start")] [:td (text-field :portal-start (if (not (nil? (:portal_start (:sales_channels product)))) (:portal_start (:sales_channels product)) (unparse custom-formatter (now))))] [:td (label :portal-end "Portal slut")] [:td (text-field :portal-end (:portal_end (:sales_channels product)))]]
+      [:tr [:td (label :dealer-start "Forhandler start")] [:td (text-field :dealer-start (if (not (nil? (:dealer_start (:sales_channels product)))) (:dealer_start (:sales_channels product)) (unparse custom-formatter (now))))] [:td (label :dealer-end "Forhandler slut")] [:td (text-field :dealer-end (:dealer_end (:sales_channels product)))]]
+      [:tr [:td (label :spoc-start "SPOC start")] [:td (text-field :spoc-start (if (not (nil? (:spoc_start (:sales_channels product)))) (:spoc_start (:sales_channels product)) (unparse custom-formatter (now))))] [:td (label :spoc-end "SPOC slut")] [:td (text-field :spoc-end (:spoc_end (:sales_channels product)))]]
         ]))
 
 (defn new-sales-product []
@@ -179,13 +182,13 @@
 (defn view-sales-products [req]
   (if (= "true" (get-in req [:params "create"]))
     (create-sales-product (struct sales-product (Integer/parseInt (get-in req [:params "id"])) (get-in req [:params "name"]) (get-in req [:params "sales-type"]) (get-in req [:params "weight"])
-      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (vector (get-in req [:params "delivery-products"])) (get-in req [:params "binding-period"])
+      (get-in req [:params "sortgroup"]) (get-in req [:params "sort"]) (get-in req [:params "delivery-products"]) (Integer. (get-in req [:params "binding-period"]))
       (struct sales-channels (get-in req [:params "start"]) (get-in req [:params "end"]) (get-in req [:params "portal-start"]) (get-in req [:params "portal-end"])
         (get-in req [:params "dealer-start"]) (get-in req [:params "dealer-end"]) (get-in req [:params "spoc-start"]) (get-in req [:params "spoc-end"])))))
   (if (= "true" (get-in req [:params "update"]))
     (update-sales-product (assoc (find-product (Integer/parseInt (get-in req [:params "id"]))) :name (get-in req [:params "name"])
       :sales_type (get-in req [:params "sales-type"]) :weight (get-in req [:params "weight"]) :sortgroup (get-in req [:params "sortgroup"]) :sort (get-in req [:params "sort"])
-      :delivery_products (vector (get-in req [:params "delivery-products"])) :binding_period (get-in req [:params "binding-period"])
+      :delivery_products (get-in req [:params "delivery-products"]) :binding_period (Integer. (get-in req [:params "binding-period"]))
       :sales_channels (struct sales-channels (get-in req [:params "start"]) (get-in req [:params "end"]) (get-in req [:params "portal-start"]) (get-in req [:params "portal-end"])
                              (get-in req [:params "dealer-start"]) (get-in req [:params "dealer-end"]) (get-in req [:params "spoc-start"]) (get-in req [:params "spoc-end"])))))
   (layout "Viev Products" (header)
@@ -193,7 +196,7 @@
       [:table
        [:tr [:th "Varenummer"] [:th "Produkt"]]
       (for [p (get-sales-products)]
-        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href (str "/editsalesproduct/" (p 1))} "Editer"]]])
+        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href (str "/editsalesproduct/" (p 1))} "Editer"]] [:td [:a {:href (str "/deletesalesproduct/" (p 1)) :onclick "return confirm('Er du sikker p&aelig; du vil slette');"} "Slet"]]])
     ])))
 
 (defn view-delivery-products [req]
@@ -206,7 +209,7 @@
       [:table
        [:tr [:th "ID"] [:th "Produkt"]]
       (for [p (get-delivery-products)]
-        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href (str "/editdeliveryproduct/" (p 1))} "Editer"]] [:td [:a {:href (str "/viewmeta/" (p 1))} "Se meta"]]])
+        [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href (str "/editdeliveryproduct/" (p 1))} "Editer"]] [:td [:a {:href (str "/viewmeta/" (p 1))} "Se meta"]] [:td [:a {:href (str "/deletedeliveryproduct/" (p 1)) :onclick "return confirm('Er du sikker p&aelig; du vil slette');"} "Slet"]]])
     ])))
 
 
@@ -251,14 +254,14 @@
 (defn calculate-vat [general-price]
   (* 0.25 general-price))
 
-(defn saveprice [pricebook-id product-id general-price koda radio copydan digi discount]
+(defn saveprice [pricebook-id product-id general-price koda radio copydan digi discount start-date end-date]
   (let [pricebook (find-pricebook pricebook-id)]
     (let [prices (:prices pricebook)]
       (let [prices-edited (filter #(not (= (Integer/parseInt product-id) (:product_id %))) prices)]
       (update-pricebook (assoc pricebook :prices (conj prices-edited (struct price (Integer/parseInt product-id) (Double/parseDouble general-price)
         (calculate-vat (Double/parseDouble general-price)) (Double/parseDouble koda) (Double/parseDouble radio) (Double/parseDouble copydan) (Double/parseDouble digi) (Double/parseDouble discount)
         (- (+ (Double/parseDouble general-price) (calculate-vat (Double/parseDouble general-price)) (Double/parseDouble koda) (Double/parseDouble radio)
-          (Double/parseDouble copydan) (Double/parseDouble digi)) (Double/parseDouble discount)))))))))
+          (Double/parseDouble copydan) (Double/parseDouble digi)) (Double/parseDouble discount)) start-date end-date)))))))
   (redirect (str "/showproductsinpricebook/" pricebook-id)))
 
 (defn priceform [price]
@@ -269,8 +272,10 @@
         [:tr [:td (label :koda "Koda")] [:td (text-field :koda (if (not (nil? price)) (:koda price) 0))]]
         [:tr [:td (label :radio "RadiKoda")] [:td (text-field :radio (if (not (nil? price)) (:radio price) 0))]]
         [:tr [:td (label :copydan "CopyDan")] [:td (text-field :copydan (if (not (nil? price)) (:copydan price) 0))]]
-        [:tr [:td (label :digi "Digital Rettigheder")] [:td (text-field :digi (if (not (nil? price)) (:digi price) 0))]
-        [:tr [:td (label :discount "Rabat")] [:td (text-field :discount (if (not (nil? price)) (:discount price) 0))]]]]))
+        [:tr [:td (label :digi "Digital Rettigheder")] [:td (text-field :digi (if (not (nil? price)) (:digi price) 0))]]
+        [:tr [:td (label :discount "Rabat")] [:td (text-field :discount (if (not (nil? price)) (:discount price) 0))]]
+        [:tr [:td (label :start-date "Start Dato")] [:td (text-field :start-date (if (not (nil? price)) (:start_date price) (unparse custom-formatter (now))))]]
+        [:tr [:td (label :end-date "Slut Dato")] [:td (text-field :end-date (if (not (nil? price)) (:end_date price) nil))]]]))
 
 (defn add-product-to-pricebook [id]
   (layout (str "Tilf&oslash;j produkt til prisbog " id) (header)
@@ -284,10 +289,11 @@
   (let [pricebook (find-pricebook id)]
     (layout (str "Vis produkter i prisbog " id) (header)
       [:table
-        [:tr [:th "Varenummer"] [:th "Pris"] [:th "Koda"] [:th "RadiKoda"] [:th "CopyDan"] [:th "Digital Rettigheder"] [:th "Rabat"] [:th "Moms"] [:th "Total Pris"]]
+        [:tr [:th "Varenummer"] [:th "Pris"] [:th "Koda"] [:th "RadiKoda"] [:th "CopyDan"] [:th "Digital Rettigheder"] [:th "Rabat"] [:th "Moms"] [:th "Total Pris"] [:th "Start Dato"] [:th "Slut Dato"]]
         (for [price (:prices pricebook)]
           [:tr [:td (:product_id price)] [:td (:general_price price)] [:td (:koda price)] [:td (:radio price)]
             [:td (:copydan price)] [:td (:digi price)] [:td (:discount price)] [:td (:vat price)] [:td (:total_price price)]
+            [:td (:start_date price)] [:td (:end_date price)] 
             [:td [:a {:href (str "/editprice/" id "/" (:product_id price))} "Opdater pris"]]
             [:td [:a {:href (str "/deleteprice/" id "/" (:product_id price))} "Slet pris"]]])])))
 
@@ -305,3 +311,11 @@
       (let [prices-edited (filter #(not (= (Integer/parseInt product-id) (:product_id %))) prices)]
         (update-pricebook (assoc pricebook :prices prices-edited)))))
   (redirect (str "/showproductsinpricebook/" pricebook-id)))
+
+(defn delete-sales-product [id]
+  (delete-id id)
+  (redirect "/viewsalesproducts"))
+
+(defn delete-delivery-product [id]
+  (delete-id id)
+  (redirect "/viewdeliveryproducts"))

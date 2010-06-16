@@ -1,4 +1,5 @@
 (ns routes
+  (:gen-class :extends javax.servlet.http.HttpServlet)
   (:use compojure.core       
         ring.adapter.jetty
         ring.middleware.reload
@@ -6,6 +7,7 @@
         ring.middleware.session
         ring.middleware.session.memory
         ring.util.response
+        ring.util.servlet
         ring.handler.dump
         produkter.html)
   (:require [compojure.route :as route]))
@@ -29,8 +31,12 @@
     (new-delivery-product))
   (GET "/editsalesproduct/:id" [id]
     (edit-sales-product id))
+  (GET "/deletesalesproduct/:id" [id]
+    (delete-sales-product id))
   (GET "/editdeliveryproduct/:id" [id]
     (edit-delivery-product id))
+  (GET "/deletedeliveryproduct/:id" [id]
+    (delete-delivery-product id))
   (GET "/addmeta/:id" [id]
     (addmeta id))
   (POST "/viewsalesproducts" req
@@ -51,8 +57,8 @@
     (add-product-to-pricebook id))
   (GET "/showproductsinpricebook/:id" [id]
     (show-products-in-pricebook id))
-  (POST "/saveprice" [pricebook-id product-id general-price koda radio copydan digi discount]
-    (saveprice pricebook-id product-id general-price koda radio copydan digi discount))
+  (POST "/saveprice" [pricebook-id product-id general-price koda radio copydan digi discount start-date end-date]
+    (saveprice pricebook-id product-id general-price koda radio copydan digi discount start-date end-date))
   (GET "/editprice/:pricebook/:productid" [pricebook productid type]
     (editprice pricebook productid type))
   (GET "/deleteprice/:pricebook/:productid" [pricebook productid]
@@ -70,8 +76,9 @@
          (wrap-session (memory-store))
          (wrap-stacktrace)))
 
+(defservice app-routes)
 
 (defn boot []
-  (run-jetty #'app {:port 8080}))
+  (future (run-jetty #'app {:port 8080})))
 
 (boot)

@@ -22,22 +22,22 @@
   (* 0.25 general-price))
 
 (defn create-pricebooks []
-  (let [prices [(struct price 1101001 89.00 (calculate-vat 89.00) 2.00 1.00 7.00 0 0 99.00)
-                (struct price 1101032 119.00 (calculate-vat 119.00) 2.00 1.00 7.00 0 0 129.00)
-                (struct price 1101003 179.00 (calculate-vat 179.00) 2.00 1.00 7.00 0 0 189.00)
-                (struct price 1301001 99.00 (calculate-vat 99.00) 0 0 0 0 0 99.00)
-                (struct price 1301002 129.00 (calculate-vat 129.00)0 0 0 0 0 129.00)
-                (struct price 1301003 169.00 (calculate-vat 169.00) 0 0 0 0 0 169.00)
-                (struct price 1301004 199.00 (calculate-vat 199.00) 0 0 0 0 0 199.00)
-                (struct price 1121001 100.00 (calculate-vat 100.00) 0 0 0 0 0 100.00)
-                (struct price 1321001 0 0 0 0 0 0 0 0)
-                (struct price 1321002 0 0 0 0 0 0 0 0)                
-                (struct price 1321003 699.00 (calculate-vat 699.00) 0 0 0 0 0 699.00)]]
+  (let [prices [(struct price 1101001 89.00 (calculate-vat 89.00) 2.00 1.00 7.00 0 0 99.00 (.toString (to-date (now))) nil)
+                (struct price 1101032 119.00 (calculate-vat 119.00) 2.00 1.00 7.00 0 0 129.00 (.toString (to-date (now))) nil)
+                (struct price 1101003 179.00 (calculate-vat 179.00) 2.00 1.00 7.00 0 0 189.00 (.toString (to-date (now))) nil)
+                (struct price 1301001 99.00 (calculate-vat 99.00) 0 0 0 0 0 99.00 (.toString (to-date (now))) nil)
+                (struct price 1301002 129.00 (calculate-vat 129.00)0 0 0 0 0 129.00 (.toString (to-date (now))) nil)
+                (struct price 1301003 169.00 (calculate-vat 169.00) 0 0 0 0 0 169.00 (.toString (to-date (now))) nil)
+                (struct price 1301004 199.00 (calculate-vat 199.00) 0 0 0 0 0 199.00 (.toString (to-date (now))) nil)
+                (struct price 1121001 100.00 (calculate-vat 100.00) 0 0 0 0 0 100.00 (.toString (to-date (now))) nil)
+                (struct price 1321001 0 0 0 0 0 0 0 0 (.toString (to-date (now))) nil)
+                (struct price 1321002 0 0 0 0 0 0 0 0 (.toString (to-date (now))) nil)
+                (struct price 1321003 699.00 (calculate-vat 699.00) 0 0 0 0 0 699.00 (.toString (to-date (now))) nil)]]
     (let [pricebook (struct pricebook "YouSee" prices)]
       (create-pricebook pricebook)))
-  (let [prices [(struct price 1101001 74.00 (calculate-vat 74.00) 2.00 1.00 7.00 0 0 84.00)
-                (struct price 1101032 109.00 (calculate-vat 109.00) 2.00 1.00 7.00 0 0 119.00)
-                (struct price 1101003 159.00 (calculate-vat 159.00) 2.00 1.00 7.00 0 0 169.00)]]
+  (let [prices [(struct price 1101001 74.00 (calculate-vat 74.00) 2.00 1.00 7.00 0 0 84.00 (.toString (to-date (now))) nil)
+                (struct price 1101032 109.00 (calculate-vat 109.00) 2.00 1.00 7.00 0 0 119.00 (.toString (to-date (now))) nil)
+                (struct price 1101003 159.00 (calculate-vat 159.00) 2.00 1.00 7.00 0 0 169.00 (.toString (to-date (now))) nil)]]
     (let [pricebook (struct pricebook "KAB" prices)]
       (create-pricebook pricebook))))
 
@@ -48,12 +48,6 @@
 (defn create-contracts []
   (create-contract (struct contract "1234567" "IER" "YouSee"))
   (create-contract (struct contract "7654321" "FF" "KAB")))
-
-;(defn create-devoting-forms []
-;  (create-devoting-form (struct devoting-form :rent_6 :rent 6))
-;  (create-devoting-form (struct devoting-form :buy :buy 6))
-;  (create-devoting-form (struct devoting-form :rent_and_buy :rent_and_buy 6))
-;  (create-devoting-form (struct devoting-form :rent_12 :rent 12)))
 
 (defn create-all []
     (create-sales-products)

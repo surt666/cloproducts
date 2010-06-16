@@ -48,10 +48,6 @@
     (map #(:value %)
       (:rows (view-get host db "views" "get_sortgroup" {:startkey [sg] :endkey [sg {}]})))))
 
-;(defn get-devoting-forms []
-;  (map #(:key %)
-;    (:rows (view-get host db "views" "get_devoting_form"))))
-
 (defn get-sales-products []
   (map #(:key %)
     (:rows (view-get host db "views" "get_sales_products"))))
@@ -90,9 +86,6 @@
         (let [y (find-pricebook "YouSee")]
           (first (filter #(= product-id (:product-id %)) (:prices y))))))))
 
-(defn create-devoting-form [devoting-form]
-  (:_id (document-create host db (:name devoting-form) devoting-form)))
-
 (defn get-pricebooks []
   (map #(:key %)
     (:rows (view-get host db "views" "get-pricebooks"))))
@@ -104,3 +97,6 @@
 (defn get-highest-betalings-aftale-id []
   (map #(:value %)
       (:rows (view-get host db "views" "betalings_sequence"))))
+
+(defn delete-id [id]
+  (document-delete host db id))
