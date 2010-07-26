@@ -9,6 +9,7 @@
         clj-time.format
         clj-time.core
         clj-time.coerce
+        sandbar.stateful-session
         clojure.contrib.seq-utils))
 
 (def custom-formatter (formatter "dd-MM-yyyy"))
@@ -40,7 +41,7 @@
           [:option {:value val :selected (not (empty? (filter #(= val %) selected-coll)))} text])
         [:option {:selected (not (empty? (filter #(= val %) selected-coll)))} x]))))
 
-(defn header []
+(defn html-header []
   (html
     [:table 
      [:tr
@@ -71,7 +72,7 @@
            [:td (:prov_system (meta p))]]))])))
 
 (defn index []
-  (layout "KONTRAKT" (header)
+  (layout "KONTRAKT" (html-header)
     (form-to [:post "/main"]
       (html
         [:table
@@ -84,54 +85,56 @@
           pricebook-name (:pricebook contract)]
       (let [prices (:prices (find-pricebook pricebook-name))
             prices-general (:prices (find-pricebook "YouSee"))
-            products (:products (find-sales-concept sales-concept-name))]        
-        {:session {:products products :prices prices :prices-general prices-general}
-         :body (layout "MAIN" (header)
+            products (:products (find-sales-concept sales-concept-name))]
+        (session-put! :prices prices)
+        (session-put! :prices-general prices-general)
+        (session-put! :products products)
+        (layout "MAIN" (html-header)
           (form-to [:POST "/mandatory"]
             (html (present-sortgroup "tva" products prices prices-general) (present-sortgroup "bba" products prices prices-general) (present-sortgroup "mobb" products prices prices-general))
-            (submit-button "Next")))}))))
+            (submit-button "Next")))))))
 
 (defn mandatory [req]
-  (let [prices ((req :session) :prices)
-        prices-general ((req :session) :prices-general)
-        products ((req :session) :products)
+  (let [prices (session-get :prices)
+        prices-general (session-get :prices-general)
+        products (session-get :products)
         tva (get-in req [:params "tva"])
         bba (get-in req [:params "bba"])]
-  {:session {:order (struct order {} {:tva tva :bba bba})}
-   :body (layout "MANDATORY" (header)
+  (session-put! :order (struct order {} {:tva tva :bba bba}))
+  (layout "MANDATORY" (html-header)
     (form-to [:post "/user-info"]
       (if (not (= tva nil))
         (present-sortgroup "tvs" products prices prices-general))
       (if (not (= bba nil))
         (html (present-sortgroup "bbm" products prices prices-general)))
-      (submit-button "Next")))}))
+      (submit-button "Next")))))
 
 (defn user-info [req]
-  (let [order ((req :session) :order)]
-    {:session {:order (assoc order :products (conj (:products order) {:tvs (get-in req [:params "tvs"]) :bbm (get-in req [:params "bbm"])}))}
-     :body (layout "USER" (header)
-       (form-to [:post "/invoice"]
-       [:table
-         [:tr
-           [:td (label :firstname "Fornavn") (text-field :firstname "")]
-           [:td (label :lastname "Efternavn") (text-field :lastname "")]]
-         [:tr
-           [:td (label :street "Vej") (text-field :street "")]
-           [:td (label :number "Nr.") (text-field :number "")]]
-         [:tr
-           [:td (label :floor "Etage") (text-field :floor "")]
-           [:td (label :side "Side") (text-field :side "")]]
-         [:tr
-           [:td (label :zip "Post Nr.") (text-field :zip "")]
-           [:td (label :city "by") (text-field :city "")]]]
-         (submit-button "Next")))}))
+  (let [order (session-get :order)]
+    (session-put! :order (assoc order :products (conj (:products order) {:tvs (get-in req [:params "tvs"]) :bbm (get-in req [:params "bbm"])})))
+    (layout "USER" (html-header)
+      (form-to [:post "/invoice"]
+      [:table
+        [:tr
+          [:td (label :firstname "Fornavn") (text-field :firstname "")]
+          [:td (label :lastname "Efternavn") (text-field :lastname "")]]
+        [:tr
+          [:td (label :street "Vej") (text-field :street "")]
+          [:td (label :number "Nr.") (text-field :number "")]]
+        [:tr
+          [:td (label :floor "Etage") (text-field :floor "")]
+          [:td (label :side "Side") (text-field :side "")]]
+        [:tr
+          [:td (label :zip "Post Nr.") (text-field :zip "")]
+          [:td (label :city "by") (text-field :city "")]]]
+        (submit-button "Next")))))
 
 (defn invoice [req]
-  (let [order ((req :session) :order)]
+  (let [order (session-get :order)]
     (let [updated-order (assoc order :customer {:firstname (get-in req [:params "firstname"]) :lastname (get-in req [:params "lastname"])})]
-      {:session {:order updated-order}
-       :body (layout "INVOICE" (header)
-        (html [:h2 (str updated-order)]))})))
+      (session-put! :order updated-order)
+      (layout "INVOICE" (html-header)
+        (html [:h2 (str updated-order)])))))
 
 (defn productform [product]
   (html
@@ -147,14 +150,14 @@
         ]))
 
 (defn new-sales-product []
-  (layout "New Product" (header)
+  (layout "New Product" (html-header)
     (form-to [:post "/viewsalesproducts"]
       (hidden-field :create "true")
       (productform nil)
       (submit-button "Opret"))))
 
 (defn new-delivery-product []
-  (layout "New Product" (header)
+  (layout "New Product" (html-header)
     (form-to [:post "/viewdeliveryproducts"]
       (hidden-field :create "true")
       [:table
@@ -163,7 +166,7 @@
 
 (defn edit-sales-product [id]
   (let [p (if (not (nil? id)) (find-product id) nil)]
-    (layout "Edit product" (header)
+    (layout "Edit product" (html-header)
       (form-to [:post "/viewsalesproducts"]
         (hidden-field :update "true")        
         (productform p)
@@ -171,7 +174,7 @@
 
 (defn edit-delivery-product [id]
   (let [p (if (not (nil? id)) (find-product id) nil)]
-    (layout "Edit product" (header)
+    (layout "Edit product" (html-header)
       (form-to [:post "/viewdeliveryproducts"]
         (hidden-field :update "true")
         (hidden-field :_id (:_id p))
@@ -191,7 +194,7 @@
       :delivery_products (get-in req [:params "delivery-products"]) :binding_period (Integer. (get-in req [:params "binding-period"]))
       :sales_channels (struct sales-channels (get-in req [:params "start"]) (get-in req [:params "end"]) (get-in req [:params "portal-start"]) (get-in req [:params "portal-end"])
                              (get-in req [:params "dealer-start"]) (get-in req [:params "dealer-end"]) (get-in req [:params "spoc-start"]) (get-in req [:params "spoc-end"])))))
-  (layout "Viev Products" (header)
+  (layout "Viev Products" (html-header)
     (html
       [:table
        [:tr [:th "Varenummer"] [:th "Produkt"]]
@@ -204,7 +207,7 @@
     (create-delivery-product (struct delivery-product (get-in req [:params "name"]) (get-in req [:params "delivery-type"]))))
   (if (= "true" (get-in req [:params "update"]))
     (update-delivery-product (assoc (find-product (get-in req [:params "_id"])) :name (get-in req [:params "name"]) :delivery_type (get-in req [:params "delivery-type"]))))
-  (layout "Viev Products" (header)
+  (layout "Viev Products" (html-header)
     (html
       [:table
        [:tr [:th "ID"] [:th "Produkt"]]
@@ -215,7 +218,7 @@
 
 (defn addmeta [id]
   (let [p (find-product id)]
-    (layout "Add Meta" (header)
+    (layout "Add Meta" (html-header)
       (form-to [:post "/savemeta"]
         (hidden-field :metaupdate "true")
         (hidden-field :id id)
@@ -232,7 +235,7 @@
 
 (defn viewmeta [id]
   (let [p (find-product id)]
-    (layout "Se Meta" (header)
+    (layout "Se Meta" (html-header)
       (html
         [:table
          [:tr [:th "Key"] [:th "Value"]]
@@ -242,7 +245,7 @@
 
 (defn viewpricebooks []
   (let [pricebooks (get-pricebooks)]
-    (layout "Prisb&oslash;ger" (header)
+    (layout "Prisb&oslash;ger" (html-header)
       (html
         [:table
          [:tr [:th "Prisbog"]]
@@ -278,7 +281,7 @@
         [:tr [:td (label :end-date "Slut Dato")] [:td (text-field :end-date (if (not (nil? price)) (:end_date price) nil))]]]))
 
 (defn add-product-to-pricebook [id]
-  (layout (str "Tilf&oslash;j produkt til prisbog " id) (header)
+  (layout (str "Tilf&oslash;j produkt til prisbog " id) (html-header)
     (form-to [:post "/saveprice"]
       (hidden-field :pricebook-id id)
       [:h2 (str "Tilf&oslash;j produkt til prisbog " id)]
@@ -287,7 +290,7 @@
 
 (defn show-products-in-pricebook [id]
   (let [pricebook (find-pricebook id)]
-    (layout (str "Vis produkter i prisbog " id) (header)
+    (layout (str "Vis produkter i prisbog " id) (html-header)
       [:table
         [:tr [:th "Varenummer"] [:th "Pris"] [:th "Koda"] [:th "RadiKoda"] [:th "CopyDan"] [:th "Digital Rettigheder"] [:th "Rabat"] [:th "Moms"] [:th "Total Pris"] [:th "Start Dato"] [:th "Slut Dato"]]
         (for [price (:prices pricebook)]
@@ -298,7 +301,7 @@
             [:td [:a {:href (str "/deleteprice/" id "/" (:product_id price))} "Slet pris"]]])])))
 
 (defn editprice [pricebook-id product-id type]
-  (layout (str "Ret produktpris i prisbog " pricebook-id) (header)
+  (layout (str "Ret produktpris i prisbog " pricebook-id) (html-header)
     (form-to [:post "/saveprice"]
       (hidden-field :pricebook-id pricebook-id)
       [:h2 (str "Ret produktpris i prisbog " pricebook-id " " type)]

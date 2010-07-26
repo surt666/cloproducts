@@ -9,6 +9,7 @@
         ring.util.response
         ring.util.servlet
         ring.handler.dump
+        sandbar.stateful-session 
         produkter.html)
   (:require [compojure.route :as route]))
 
@@ -73,7 +74,8 @@
      (-> (var app-routes)
          (wrap-reload '(produkter.html))
          (wrap-reload '(produkter.roles))
-         (wrap-session (memory-store))
+         ;(wrap-session (memory-store))
+         (wrap-stateful-session)
          (wrap-stacktrace)))
 
 (defservice app-routes)
