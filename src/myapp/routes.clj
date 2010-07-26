@@ -1,5 +1,4 @@
-(ns routes
-  (:gen-class :extends javax.servlet.http.HttpServlet)
+(ns myapp.routes
   (:use compojure.core       
         ring.adapter.jetty
         ring.middleware.reload
@@ -13,7 +12,7 @@
         produkter.html)
   (:require [compojure.route :as route]))
 
-
+;TODO at the moment Compojure apparently expects the contextpath some app servers attach at deploytime
 (defroutes app-routes
   (GET "/" req (index))
 ;  (POST "/mandatory" req
@@ -66,6 +65,7 @@
     (deleteprice pricebook productid))
   (GET "/set-session"  [] {:body "set session" :session {:a-key "a value"}})
   (GET "/read-session" {s :session} {:body (str "session: " s)})
+  (ANY "*" {uri :uri} uri)
   (GET "/dump-request" r 
   (ring.handler.dump/handle-dump r))
     (route/not-found "Page not found"))
@@ -74,13 +74,10 @@
      (-> (var app-routes)
          (wrap-reload '(produkter.html))
          (wrap-reload '(produkter.roles))
-         ;(wrap-session (memory-store))
          (wrap-stateful-session)
          (wrap-stacktrace)))
-
-(defservice app-routes)
 
 (defn boot []
   (future (run-jetty #'app {:port 8080})))
 
-(boot)
+;(boot)

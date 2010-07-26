@@ -16,26 +16,26 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Maven: org.clojure:clojure:1.1.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.clojure:clojure-contrib:1.1.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: compojure:compojure:0.4.0-RC3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: clout:clout:0.2.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: ring:ring-core:0.2.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: commons-codec:commons-codec:1.4" level="project" />
-    <orderEntry type="library" exported="" name="Maven: commons-io:commons-io:1.4" level="project" />
-    <orderEntry type="library" exported="" name="Maven: commons-fileupload:commons-fileupload:1.2.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: hiccup:hiccup:0.2.4" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.mortbay.jetty:servlet-api-2.5:6.1.14" level="project" />
-    <orderEntry type="library" exported="" name="Maven: ring:ring-jetty-adapter:0.2.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: ring:ring-servlet:0.2.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.mortbay.jetty:jetty:6.1.14" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.mortbay.jetty:jetty-util:6.1.14" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.clojars.the-kenny:clojure-couchdb:0.2.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: clojure-http-client:clojure-http-client:1.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: clj-time:clj-time:0.1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: joda-time:joda-time:1.6" level="project" />
-    <orderEntry type="library" exported="" name="Maven: enlive:enlive:1.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ccil.cowan.tagsoup:tagsoup:1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.clojure:clojure:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.clojure:clojure-contrib:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: compojure:compojure:0.4.0-RC3" level="project" />
+    <orderEntry type="library" name="Maven: clout:clout:0.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ring:ring-core:0.2.0" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:1.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.1" level="project" />
+    <orderEntry type="library" name="Maven: hiccup:hiccup:0.2.4" level="project" />
+    <orderEntry type="library" name="Maven: org.mortbay.jetty:servlet-api-2.5:6.1.14" level="project" />
+    <orderEntry type="library" name="Maven: ring:ring-jetty-adapter:0.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ring:ring-servlet:0.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.mortbay.jetty:jetty:6.1.14" level="project" />
+    <orderEntry type="library" name="Maven: org.mortbay.jetty:jetty-util:6.1.14" level="project" />
+    <orderEntry type="library" name="Maven: org.clojars.the-kenny:clojure-couchdb:0.2.1" level="project" />
+    <orderEntry type="library" name="Maven: clojure-http-client:clojure-http-client:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: clj-time:clj-time:0.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: joda-time:joda-time:1.6" level="project" />
+    <orderEntry type="library" name="Maven: enlive:enlive:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.ccil.cowan.tagsoup:tagsoup:1.2" level="project" />
   </component>
 </module>
 
