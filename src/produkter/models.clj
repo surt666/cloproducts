@@ -18,20 +18,25 @@
 
 (defstruct contract :name :sales_concept_name :pricebook)
 
-(defstruct delivery-product :name :delivery_type)
+(defstruct delivery-product :name :delivery_type :channels)
 
-(defstruct sales-product :id :name :sales_type :weight :sortgroup :sort :delivery_products :binding_period :sales_channels)
+(defstruct sales-product :id :name :sales_type :weight :sortgroup :sort :delivery_products :sales_products :binding_period :sales_channels)
 
 (defstruct sales-channels :start :end :portal_start :portal_end :dealer_start :dealer_end :spoc_start :spoc_end)
+
+(defstruct channel :name :channel_type)
 
 (def *delivery-keys*
   #{:prov_system :prov_string :logistic_string :port25 :prov_must_have_sn})
 
 (def *sales-types*
-  #{"Engangs" "Abon"})
+  #{"Engangsydelse" "Abonnement" "Bundle"})
 
 (def *binding-periods*
   #{0 6 12})
 
 (def *delivery-type*
-  #{"TV" "DTV" "BB" "TLF" "MoBB" "Bundle" "Kanal" "HW m. SN" "HW u. SN"})
+  #{"CLEAR" "DTV" "BB" "TLF" "MoBB" "HW m. SN" "HW u. SN"})
+
+(def *channel-type*
+  #{"TV" "RADIO"})

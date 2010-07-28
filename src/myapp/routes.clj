@@ -29,6 +29,8 @@
     (new-sales-product))
   (GET "/newdeliveryproduct" req
     (new-delivery-product))
+  (GET "/newchannel" req
+    (new-channel))
   (GET "/editsalesproduct/:id" [id]
     (edit-sales-product id))
   (GET "/deletesalesproduct/:id" [id]
@@ -37,6 +39,10 @@
     (edit-delivery-product id))
   (GET "/deletedeliveryproduct/:id" [id]
     (delete-delivery-product id))
+  (GET "/editchannel/:id" [id]
+    (edit-channel id))
+  (GET "/deletechannel/:id" [id]
+    (delete-channel id))
   (GET "/addmeta/:id" [id]
     (addmeta id))
   (POST "/viewsalesproducts" req
@@ -47,6 +53,10 @@
     (view-delivery-products req))
   (GET "/viewdeliveryproducts" req
     (view-delivery-products req))
+  (POST "/viewchannels" req
+    (view-channels req))
+  (GET "/viewchannels" req
+    (view-channels req))
   (GET "/viewmeta/:id" [id]
     (viewmeta id))
   (POST "/savemeta" req
@@ -73,7 +83,7 @@
 (def app
      (-> (var app-routes)
          (wrap-reload '(produkter.html))
-         (wrap-reload '(produkter.roles))
+         (wrap-reload '(produkter.models))
          (wrap-stateful-session)
          (wrap-stacktrace)))
 

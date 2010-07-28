@@ -18,6 +18,9 @@
 (defn create-delivery-product [product]
   (:_id (document-create host db (assoc product :meta (meta product)))))
 
+(defn create-channel [channel]
+  (:_id (document-create host db (assoc channel :meta (meta channel)))))
+
 (defn create-sales-product [product]
   (:_id (document-create host db (:id product) product)))
 
@@ -26,6 +29,9 @@
 
 (defn update-delivery-product [product]
   (:_id (document-update host db (:_id product) (assoc product :meta (meta product)))))
+
+(defn update-channel [channel]
+  (:_id (document-update host db (:_id channel) (assoc channel :meta (meta channel)))))
 
 (defn create-subscription [aftale]
   (:_id (document-create host db aftale)))
@@ -56,6 +62,9 @@
   (map #(:key %)
     (:rows (view-get host db "views" "get_delivery_products"))))
 
+(defn get-channels []
+  (map #(:key %)
+    (:rows (view-get host db "views" "get_channels"))))
 
 (defn create-pricebook [pricebook]
   (:_id (document-create host db (:name pricebook) pricebook)))

@@ -46,7 +46,8 @@
     [:table 
      [:tr
       [:td [:a {:href "/viewsalesproducts"} "Salgs Produkter"]] [:td "|"] [:td [:a {:href "/viewdeliveryproducts"} "Leverings Produkter"]] [:td "|"] [:td [:a {:href "/"} "Bestil"]] [:td "|"]
-      [:td [:a {:href "/newsalesproduct"} "Opret Salgs Produkt"]] [:td "|"] [:td [:a {:href "/newdeliveryproduct"} "Opret Leverings Produkt"]] [:td "|"] [:td [:a {:href "/viewpricebooks"} "Prisb&oslash;ger"]]]]))
+      [:td [:a {:href "/newsalesproduct"} "Opret Salgs Produkt"]] [:td "|"] [:td [:a {:href "/newdeliveryproduct"} "Opret Leverings Produkt"]] [:td "|"]
+      [:td [:a {:href "/viewpricebooks"} "Prisb&oslash;ger"]] [:td [:a {:href "/newchannel"} "Opret Kanal"]] [:td [:a {:href "/viewchannels"} "Kanaler"]]]]))
 
 (defn price-for-product [product-id prices prices-general]
   "Try and find price in contract specific pricebook. If not there find it in general pricebook.
@@ -161,12 +162,21 @@
     (form-to [:post "/viewdeliveryproducts"]
       (hidden-field :create "true")
       [:table
-          [:tr [:td (label :name "Navn")] [:td (text-field :name nil)] [:td (label :delivery-type "Produkt type")] [:td (drop-down :delivery-type *delivery-type* nil)]]]
+          [:tr [:td (label :name "Navn")] [:td (text-field :name nil)] [:td (label :delivery-type "Produkt type")] [:td (drop-down :delivery-type *delivery-type* nil)]]
+          [:tr [:td (label :channels "Kanaler")] [:td [:select {:id "channels" :name "channels" :multiple "multiple" :size "7"} (select-options-multiple (get-channels ))]]]]
+      (submit-button "Opret"))))
+
+(defn new-channel []
+  (layout "New Channel" (html-header)
+    (form-to [:post "/viewchannels"]
+      (hidden-field :create "true")
+      [:table
+          [:tr [:td (label :name "Navn")] [:td (text-field :name nil)] [:td (label :channel-type "Kanal type")] [:td (drop-down :channel-type *channel-type* nil)]]]
       (submit-button "Opret"))))
 
 (defn edit-sales-product [id]
   (let [p (if (not (nil? id)) (find-product id) nil)]
-    (layout "Edit product" (html-header)
+    (layout "Edit Product" (html-header)
       (form-to [:post "/viewsalesproducts"]
         (hidden-field :update "true")        
         (productform p)
@@ -174,12 +184,23 @@
 
 (defn edit-delivery-product [id]
   (let [p (if (not (nil? id)) (find-product id) nil)]
-    (layout "Edit product" (html-header)
+    (layout "Edit Product" (html-header)
       (form-to [:post "/viewdeliveryproducts"]
         (hidden-field :update "true")
         (hidden-field :_id (:_id p))
         [:table
-          [:tr [:td (label :name "Navn")] [:td (text-field :name (:name p))] [:td (label :delivery-type "Produkt type")] [:td (drop-down :delivery-type *delivery-type* (:delivery_type p))]]]
+          [:tr [:td (label :name "Navn")] [:td (text-field :name (:name p))] [:td (label :delivery-type "Produkt type")] [:td (drop-down :delivery-type *delivery-type* (:delivery_type p))]]
+          [:tr [:td (label :channels "Kanaler")] [:td [:select {:id "channels" :name "channels" :multiple "multiple" :size "7"} (select-options-multiple (get-channels) (:channels p))]]]]
+        (submit-button "Opdater")))))
+
+(defn edit-channel [id]
+  (let [p (if (not (nil? id)) (find-product id) nil)]
+    (layout "Edit Channel" (html-header)
+      (form-to [:post "/viewchannels"]
+        (hidden-field :update "true")
+        (hidden-field :_id (:_id p))
+        [:table
+          [:tr [:td (label :name "Navn")] [:td (text-field :name (:name p))] [:td (label :channel-type "Produkt type")] [:td (drop-down :channel-type *delivery-type* (:channel_type p))]]]
         (submit-button "Opdater")))))
 
 (defn view-sales-products [req]
@@ -204,9 +225,9 @@
 
 (defn view-delivery-products [req]
   (if (= "true" (get-in req [:params "create"]))
-    (create-delivery-product (struct delivery-product (get-in req [:params "name"]) (get-in req [:params "delivery-type"]))))
+    (create-delivery-product (struct delivery-product (get-in req [:params "name"]) (get-in req [:params "delivery-type"]) (get-in req [:params "channels"]))))
   (if (= "true" (get-in req [:params "update"]))
-    (update-delivery-product (assoc (find-product (get-in req [:params "_id"])) :name (get-in req [:params "name"]) :delivery_type (get-in req [:params "delivery-type"]))))
+    (update-delivery-product (assoc (find-product (get-in req [:params "_id"])) :name (get-in req [:params "name"]) :delivery_type (get-in req [:params "delivery-type"]) :channels (get-in req [:params "channels"]))))
   (layout "Viev Products" (html-header)
     (html
       [:table
@@ -215,6 +236,18 @@
         [:tr [:td (p 1)] [:td (p 0)] [:td [:a {:href (str "/editdeliveryproduct/" (p 1))} "Editer"]] [:td [:a {:href (str "/viewmeta/" (p 1))} "Se meta"]] [:td [:a {:href (str "/deletedeliveryproduct/" (p 1)) :onclick "return confirm('Er du sikker p&aelig; du vil slette');"} "Slet"]]])
     ])))
 
+(defn view-channels [req]
+  (if (= "true" (get-in req [:params "create"]))
+    (create-channel (struct channel (get-in req [:params "name"]) (get-in req [:params "channel-type"]))))
+  (if (= "true" (get-in req [:params "update"]))
+    (update-channel (assoc (find-product (get-in req [:params "_id"])) :name (get-in req [:params "name"]) :channel_type (get-in req [:params "channel-type"]))))
+  (layout "Viev Channels" (html-header)
+    (html
+      [:table
+       [:tr [:th "ID"] [:th "Produkt"] [:th "Type"]]
+      (for [p (get-channels)]
+        [:tr [:td (p 1)] [:td (p 0)] [:td (p 2)] [:td [:a {:href (str "/editchannel/" (p 1))} "Editer"]] [:td [:a {:href (str "/deletechannel/" (p 1)) :onclick "return confirm('Er du sikker p&aelig; du vil slette');"} "Slet"]]])
+    ])))
 
 (defn addmeta [id]
   (let [p (find-product id)]
@@ -322,3 +355,7 @@
 (defn delete-delivery-product [id]
   (delete-id id)
   (redirect "/viewdeliveryproducts"))
+
+(defn delete-channel [id]
+  (delete-id id)
+  (redirect "/viewchannels"))
